@@ -1,0 +1,601 @@
+{
+  "ambiente": {
+    "data": "2026-11-08T22:59:02",
+    "perfil": "final",
+    "so": "Windows-11-10.0.26200-SP0",
+    "processador": "AMD Ryzen 5 5600 6-Core Processor",
+    "python": "3.13.5",
+    "pymilvus": "3.0.2",
+    "milvus_modo": "zilliz",
+    "modelo_embedding": "paraphrase-multilingual-MiniLM-L12-v2",
+    "dimensao": 384,
+    "ram_gb": "31,9",
+    "mysql_versao": "8.4.13",
+    "milvus_versao": "Zilliz Cloud Vector Database(Compatible with Milvus 3.0)"
+  },
+  "repeticoes": 5,
+  "aquecimento": 1,
+  "linhas_filmes": 44213,
+  "latencia_base": {
+    "mysql": {
+      "media_ms": 0.5201100002523162,
+      "desvio_ms": 0.035441990117092176,
+      "min_ms": 0.45529999988502823,
+      "max_ms": 0.567600000067614,
+      "n": 20,
+      "amostras_ms": [
+        0.546,
+        0.537,
+        0.527,
+        0.524,
+        0.545,
+        0.528,
+        0.534,
+        0.539,
+        0.553,
+        0.549,
+        0.568,
+        0.541,
+        0.55,
+        0.518,
+        0.455,
+        0.457,
+        0.475,
+        0.469,
+        0.463,
+        0.525
+      ]
+    },
+    "milvus": {
+      "media_ms": 249.47454499961168,
+      "desvio_ms": 161.05243548663364,
+      "min_ms": 190.7333999988623,
+      "max_ms": 740.5657999988762,
+      "n": 20,
+      "amostras_ms": [
+        204.87,
+        698.923,
+        193.754,
+        740.566,
+        190.733,
+        191.035,
+        200.806,
+        200.236,
+        191.632,
+        201.535,
+        191.339,
+        200.979,
+        191.585,
+        205.579,
+        201.731,
+        201.023,
+        191.338,
+        200.981,
+        191.098,
+        199.747
+      ]
+    }
+  },
+  "carga_mysql": {
+    "ambiente": {
+      "data": "2026-11-08T22:38:09",
+      "perfil": "final",
+      "so": "Windows-11-10.0.26200-SP0",
+      "processador": "AMD Ryzen 5 5600 6-Core Processor",
+      "python": "3.13.5",
+      "pymilvus": "3.0.2",
+      "milvus_modo": "zilliz",
+      "modelo_embedding": "paraphrase-multilingual-MiniLM-L12-v2",
+      "dimensao": 384,
+      "ram_gb": "31,9",
+      "mysql_versao": "8.4.13"
+    },
+    "linhas": {
+      "filmes": 44213,
+      "generos": 20,
+      "filme_genero": 89643,
+      "elenco": 197433,
+      "filmes_vetores": 44213
+    },
+    "insercao_s": {
+      "filmes": 2.892,
+      "generos": 0.003,
+      "filme_genero": 1.044,
+      "elenco": 11.497,
+      "filmes_vetores": 7.029
+    },
+    "insercao_total_s": 22.465,
+    "indexacao_s": 5.56,
+    "espaco": {
+      "elenco": {
+        "linhas_estimadas": 197064,
+        "dados_bytes": 13123584,
+        "indices_bytes": 10518528
+      },
+      "filme_genero": {
+        "linhas_estimadas": 89900,
+        "dados_bytes": 2637824,
+        "indices_bytes": 2637824
+      },
+      "filmes": {
+        "linhas_estimadas": 42540,
+        "dados_bytes": 24690688,
+        "indices_bytes": 6897664
+      },
+      "filmes_vetores": {
+        "linhas_estimadas": 39312,
+        "dados_bytes": 81362944,
+        "indices_bytes": 0
+      },
+      "generos": {
+        "linhas_estimadas": 20,
+        "dados_bytes": 16384,
+        "indices_bytes": 16384
+      }
+    }
+  },
+  "carga_milvus": {
+    "ambiente": {
+      "data": "2026-11-08T22:54:34",
+      "perfil": "final",
+      "so": "Windows-11-10.0.26200-SP0",
+      "processador": "AMD Ryzen 5 5600 6-Core Processor",
+      "python": "3.13.5",
+      "pymilvus": "3.0.2",
+      "milvus_modo": "zilliz",
+      "modelo_embedding": "paraphrase-multilingual-MiniLM-L12-v2",
+      "dimensao": 384,
+      "ram_gb": "31,9",
+      "milvus_versao": "Zilliz Cloud Vector Database(Compatible with Milvus 3.0)"
+    },
+    "linhas": {
+      "filmes": 44213,
+      "elenco": 197433
+    },
+    "insercao_s": {
+      "filmes": 43.3,
+      "elenco": 105.269
+    },
+    "indexacao": {
+      "filmes": {
+        "indice_vetorial_s": 15.291,
+        "indices_escalares_s": 21.989,
+        "load_s": 2.821
+      },
+      "elenco": {
+        "indice_vetorial_s": 12.521,
+        "indices_escalares_s": 5.716,
+        "load_s": 3.19
+      }
+    },
+    "estatisticas": {
+      "filmes": {
+        "row_count": 44213
+      },
+      "elenco": {
+        "row_count": 197433
+      }
+    },
+    "insercao_total_s": 148.569,
+    "indexacao_total_s": 61.528,
+    "vetores_bytes_brutos": 371168256
+  },
+  "consultas": {
+    "C01": {
+      "titulo": "Leitura por chave primária (lote de 100)",
+      "categoria": "Leitura x Atualização",
+      "sql": "SELECT id, titulo, ano, nota, votos, diretor FROM filmes WHERE id IN (...100 ids)",
+      "milvus_op": "client.get(collection, ids=[...100 ids], output_fields=[...])",
+      "mysql": {
+        "media_ms": 1.7156399997475091,
+        "desvio_ms": 0.18887666079461163,
+        "min_ms": 1.3908000000810716,
+        "max_ms": 1.8710000003920868,
+        "n": 5,
+        "amostras_ms": [
+          1.391,
+          1.763,
+          1.818,
+          1.736,
+          1.871
+        ]
+      },
+      "milvus": {
+        "media_ms": 204.16694000014104,
+        "desvio_ms": 6.017687973713508,
+        "min_ms": 193.64610000047833,
+        "max_ms": 208.9092000023811,
+        "n": 5,
+        "amostras_ms": [
+          193.646,
+          205.514,
+          208.909,
+          206.524,
+          206.242
+        ]
+      }
+    },
+    "C02": {
+      "titulo": "Atualização em lote (100 registros)",
+      "categoria": "Leitura x Atualização",
+      "sql": "UPDATE filmes SET votos = votos + 1 WHERE id IN (...100 ids)",
+      "milvus_op": "client.query(ids=[...], output_fields=['*']) -> altera -> client.upsert(data)",
+      "mysql": {
+        "media_ms": 5.322060000617057,
+        "desvio_ms": 0.3135624150209452,
+        "min_ms": 4.947199999151053,
+        "max_ms": 5.704999999579741,
+        "n": 5,
+        "amostras_ms": [
+          4.947,
+          5.064,
+          5.705,
+          5.384,
+          5.51
+        ]
+      },
+      "milvus": {
+        "media_ms": 764.9805200002447,
+        "desvio_ms": 123.82135950875325,
+        "min_ms": 645.5771000000823,
+        "max_ms": 898.7997000003816,
+        "n": 5,
+        "amostras_ms": [
+          898.8,
+          726.052,
+          645.577,
+          894.169,
+          660.305
+        ]
+      }
+    },
+    "C03": {
+      "titulo": "Condicional simples + ordenação",
+      "categoria": "Uma tabela",
+      "sql": "SELECT id, titulo, nota, votos FROM filmes WHERE nota >= 8 AND votos >= 500 AND ano BETWEEN 1990 AND 2010 ORDER BY nota DESC, votos DESC, id LIMIT 100",
+      "milvus_op": "client.query(filter=\"nota >= 8 and votos >= 500 and ano >= 1990 and ano <= 2010\") + ordenação na aplicação",
+      "mysql": {
+        "media_ms": 0.8750199995120056,
+        "desvio_ms": 0.034318028049574824,
+        "min_ms": 0.8379999999306165,
+        "max_ms": 0.9155000007012859,
+        "n": 5,
+        "amostras_ms": [
+          0.907,
+          0.838,
+          0.86,
+          0.854,
+          0.916
+        ]
+      },
+      "milvus": {
+        "media_ms": 199.8120000003837,
+        "desvio_ms": 4.554052769325315,
+        "min_ms": 191.75410000025295,
+        "max_ms": 202.58240000111982,
+        "n": 5,
+        "amostras_ms": [
+          201.305,
+          191.754,
+          202.389,
+          201.03,
+          202.582
+        ]
+      }
+    },
+    "C04": {
+      "titulo": "Busca por parte do texto (título)",
+      "categoria": "Uma tabela",
+      "sql": "SELECT id, titulo FROM filmes WHERE titulo LIKE '%Love%'",
+      "milvus_op": "client.query(filter='titulo like \"%Love%\"')",
+      "mysql": {
+        "media_ms": 14.79371999957948,
+        "desvio_ms": 0.4248755482171175,
+        "min_ms": 14.176299999235198,
+        "max_ms": 15.24529999733204,
+        "n": 5,
+        "amostras_ms": [
+          15.086,
+          14.879,
+          15.245,
+          14.583,
+          14.176
+        ]
+      },
+      "milvus": {
+        "media_ms": 219.9088599998504,
+        "desvio_ms": 11.969179926198743,
+        "min_ms": 201.27549999961047,
+        "max_ms": 229.14590000073076,
+        "n": 5,
+        "amostras_ms": [
+          201.275,
+          226.651,
+          228.002,
+          214.471,
+          229.146
+        ]
+      }
+    },
+    "C05": {
+      "titulo": "Agregação por ano (COUNT/AVG/MAX/MIN)",
+      "categoria": "Uma tabela",
+      "sql": "SELECT ano, COUNT(*), AVG(nota), MAX(nota), MIN(nota) FROM filmes WHERE votos >= 10 AND ano BETWEEN 1980 AND 2017 GROUP BY ano ORDER BY ano",
+      "milvus_op": "client.query_iterator(filter=...) + groupby na aplicação (sem GROUP BY nativo)",
+      "mysql": {
+        "media_ms": 44.79969999883906,
+        "desvio_ms": 1.488390249104907,
+        "min_ms": 43.346199996449286,
+        "max_ms": 46.78079999939655,
+        "n": 5,
+        "amostras_ms": [
+          45.863,
+          46.781,
+          44.468,
+          43.346,
+          43.541
+        ]
+      },
+      "milvus": {
+        "media_ms": 1505.2287800004706,
+        "desvio_ms": 78.56964874637367,
+        "min_ms": 1392.6757000008365,
+        "max_ms": 1585.9391000012693,
+        "n": 5,
+        "amostras_ms": [
+          1585.939,
+          1517.201,
+          1392.676,
+          1566.005,
+          1464.323
+        ]
+      }
+    },
+    "C06": {
+      "titulo": "Busca por parte do nome do ator (JOIN)",
+      "categoria": "Duas tabelas",
+      "sql": "SELECT f.id, f.titulo, f.ano, e.ator, e.personagem FROM elenco e JOIN filmes f ON f.id = e.filme_id WHERE e.ator LIKE '%Hanks%' ORDER BY f.ano",
+      "milvus_op": "query(elenco, 'ator like \"%Hanks%\"') -> query(filmes, 'id in [...]') -> junção na aplicação",
+      "mysql": {
+        "media_ms": 39.65590000079828,
+        "desvio_ms": 0.5954477819469521,
+        "min_ms": 38.746599999285536,
+        "max_ms": 40.41770000185352,
+        "n": 5,
+        "amostras_ms": [
+          39.751,
+          39.701,
+          39.664,
+          40.418,
+          38.747
+        ]
+      },
+      "milvus": {
+        "media_ms": 398.38025999924866,
+        "desvio_ms": 9.622931798728517,
+        "min_ms": 383.2951000003959,
+        "max_ms": 407.7008999993268,
+        "n": 5,
+        "amostras_ms": [
+          383.295,
+          399.725,
+          395.879,
+          405.301,
+          407.701
+        ]
+      }
+    },
+    "C07": {
+      "titulo": "Filmes de um ator: JOIN x documento desnormalizado",
+      "categoria": "Duas tabelas",
+      "sql": "SELECT f.id, f.titulo, f.ano FROM elenco e JOIN filmes f ON f.id = e.filme_id WHERE e.ator = 'Tom Hanks'",
+      "milvus_op": "client.query(filter='array_contains(elenco_principal, \"Tom Hanks\")')",
+      "mysql": {
+        "media_ms": 0.8182800003851298,
+        "desvio_ms": 0.06470878622997506,
+        "min_ms": 0.7568999972136226,
+        "max_ms": 0.9205999995174352,
+        "n": 5,
+        "amostras_ms": [
+          0.836,
+          0.805,
+          0.773,
+          0.757,
+          0.921
+        ]
+      },
+      "milvus": {
+        "media_ms": 198.13799999974435,
+        "desvio_ms": 5.726732896635215,
+        "min_ms": 191.09360000220477,
+        "max_ms": 202.85859999785316,
+        "n": 5,
+        "amostras_ms": [
+          191.094,
+          192.751,
+          202.859,
+          202.504,
+          201.483
+        ]
+      }
+    },
+    "C08": {
+      "titulo": "Top-10 atores por nota média (JOIN + GROUP BY + HAVING)",
+      "categoria": "Duas tabelas",
+      "sql": "SELECT e.ator, COUNT(*), AVG(f.nota), MAX(f.nota) FROM elenco e JOIN filmes f ON f.id = e.filme_id WHERE f.votos >= 50 GROUP BY e.ator HAVING COUNT(*) >= N ORDER BY AVG(f.nota) DESC LIMIT 10",
+      "milvus_op": "query_iterator(filmes) + query_iterator(elenco) + merge/groupby na aplicação",
+      "mysql": {
+        "media_ms": 94.67897999929846,
+        "desvio_ms": 10.483802050923801,
+        "min_ms": 83.9218000000983,
+        "max_ms": 109.84380000081728,
+        "n": 5,
+        "amostras_ms": [
+          109.844,
+          90.756,
+          100.699,
+          88.174,
+          83.922
+        ]
+      },
+      "milvus": {
+        "media_ms": 9661.875519999012,
+        "desvio_ms": 249.30262695848828,
+        "min_ms": 9485.339399998338,
+        "max_ms": 10082.851399998617,
+        "n": 5,
+        "amostras_ms": [
+          9693.152,
+          9548.853,
+          9485.339,
+          10082.851,
+          9499.182
+        ]
+      }
+    },
+    "C09": {
+      "titulo": "Agregação por gênero (relação N:N x ARRAY)",
+      "categoria": "Duas tabelas",
+      "sql": "SELECT g.nome, COUNT(*), AVG(f.nota), MAX(f.nota), MIN(f.nota) FROM generos g JOIN filme_genero fg ON ... JOIN filmes f ON ... WHERE f.votos >= 10 GROUP BY g.nome",
+      "milvus_op": "query_iterator(filmes, campos=[generos, nota]) + explode/groupby na aplicação",
+      "mysql": {
+        "media_ms": 81.02238000064972,
+        "desvio_ms": 4.250047241307558,
+        "min_ms": 77.25330000175745,
+        "max_ms": 88.32080000138376,
+        "n": 5,
+        "amostras_ms": [
+          88.321,
+          80.167,
+          80.171,
+          77.253,
+          79.2
+        ]
+      },
+      "milvus": {
+        "media_ms": 1946.1323399998946,
+        "desvio_ms": 125.9069590439246,
+        "min_ms": 1820.6494000005478,
+        "max_ms": 2117.962799999077,
+        "n": 5,
+        "amostras_ms": [
+          2005.411,
+          1960.573,
+          1820.649,
+          2117.963,
+          1826.065
+        ]
+      }
+    },
+    "C10": {
+      "titulo": "Busca semântica kNN top-10 (consulta em português)",
+      "categoria": "Vetorial",
+      "sql": "SELECT filme_id, vetor FROM filmes_vetores + similaridade de cosseno na aplicação (força bruta, kNN exato)",
+      "milvus_op": "client.search(data=[vetor], anns_field='vetor', limit=10)  # ANN",
+      "mysql": {
+        "media_ms": 245.20310000007157,
+        "desvio_ms": 16.47078388149552,
+        "min_ms": 227.12479999972857,
+        "max_ms": 272.00810000067577,
+        "n": 5,
+        "amostras_ms": [
+          242.856,
+          244.655,
+          239.372,
+          272.008,
+          227.125
+        ]
+      },
+      "milvus": {
+        "media_ms": 203.27281999998377,
+        "desvio_ms": 6.10875383610062,
+        "min_ms": 194.7455000008631,
+        "max_ms": 209.68509999875096,
+        "n": 5,
+        "amostras_ms": [
+          205.329,
+          199.352,
+          194.746,
+          207.253,
+          209.685
+        ]
+      },
+      "recall": 0.9
+    },
+    "C11": {
+      "titulo": "Busca híbrida: similaridade + filtros (nota, ano, gênero)",
+      "categoria": "Vetorial",
+      "sql": "SELECT v.vetor FROM filmes_vetores v JOIN filmes f ... JOIN filme_genero ... JOIN generos g ... WHERE f.nota >= 7 AND f.ano >= 2000 AND g.nome = 'Science Fiction' + cosseno na aplicação",
+      "milvus_op": "client.search(data=[vetor], filter='nota >= 7 and ano >= 2000 and array_contains(generos, \"Science Fiction\")', limit=10)",
+      "mysql": {
+        "media_ms": 10.676179999427404,
+        "desvio_ms": 0.5072188313253201,
+        "min_ms": 10.025199997471645,
+        "max_ms": 11.43450000017765,
+        "n": 5,
+        "amostras_ms": [
+          11.435,
+          10.765,
+          10.538,
+          10.619,
+          10.025
+        ]
+      },
+      "milvus": {
+        "media_ms": 203.6108799999056,
+        "desvio_ms": 5.741810725478258,
+        "min_ms": 193.61489999937476,
+        "max_ms": 207.00949999809382,
+        "n": 5,
+        "amostras_ms": [
+          206.762,
+          203.828,
+          206.84,
+          193.615,
+          207.009
+        ]
+      },
+      "recall": 0.9
+    },
+    "C12": {
+      "titulo": "Linguagem natural: FULLTEXT (léxico) x semântica",
+      "categoria": "Vetorial",
+      "sql": "SELECT id, titulo FROM filmes WHERE MATCH(sinopse) AGAINST ('masked hero fighting crime in a corrupt city') LIMIT 10",
+      "milvus_op": "client.search(data=[embed('Um herói mascarado combatendo o crime...')], limit=10)",
+      "mysql": {
+        "media_ms": 3.456759999971837,
+        "desvio_ms": 0.2258574711019099,
+        "min_ms": 3.274099999543978,
+        "max_ms": 3.8121999969007447,
+        "n": 5,
+        "amostras_ms": [
+          3.812,
+          3.332,
+          3.274,
+          3.55,
+          3.316
+        ]
+      },
+      "milvus": {
+        "media_ms": 206.5764200000558,
+        "desvio_ms": 6.5266426143915,
+        "min_ms": 197.80050000190386,
+        "max_ms": 215.97359999941546,
+        "n": 5,
+        "amostras_ms": [
+          208.125,
+          205.885,
+          215.974,
+          197.801,
+          205.097
+        ]
+      }
+    }
+  },
+  "recursos": {
+    "mysql_dados_bytes": 121831424,
+    "mysql_indices_bytes": 20070400,
+    "mysql_memoria_container": "748.1MiB / 15.58GiB",
+    "milvus_observacao": "Zilliz Cloud (gerenciado): memória/disco não expostos"
+  }
+}

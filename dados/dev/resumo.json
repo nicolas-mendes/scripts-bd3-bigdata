@@ -1,0 +1,42 @@
+{
+  "filmes": 2000,
+  "elenco_linhas": 9991,
+  "atores_distintos": 4060,
+  "generos_distintos": 19,
+  "ano_min": 1927,
+  "ano_max": 2017,
+  "nota_media": 6.637,
+  "sinopse_media_caracteres": 299.3,
+  "atributos_filme": [
+    "id",
+    "titulo",
+    "titulo_original",
+    "sinopse",
+    "ano",
+    "data_lancamento",
+    "nota",
+    "votos",
+    "popularidade",
+    "orcamento",
+    "receita",
+    "duracao",
+    "idioma",
+    "generos",
+    "palavras_chave",
+    "diretor",
+    "elenco_principal"
+  ],
+  "atributos_elenco": [
+    "id",
+    "filme_id",
+    "ordem",
+    "ator",
+    "personagem",
+    "genero_ator"
+  ],
+  "tempos_s": {
+    "limpeza_integracao": 6.14,
+    "vetorizacao_filmes": 43.38,
+    "vetorizacao_elenco": 27.61
+  }
+}

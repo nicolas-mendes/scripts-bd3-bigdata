@@ -1,0 +1,822 @@
+{
+  "verificacoes": [
+    {
+      "verificacao": "contagem filmes",
+      "ok": true,
+      "detalhe": "preparado=44213 mysql=44213 milvus=44213"
+    },
+    {
+      "verificacao": "contagem elenco",
+      "ok": true,
+      "detalhe": "preparado=197433 mysql=197433 milvus=197433"
+    },
+    {
+      "verificacao": "amostra de 20 filmes",
+      "ok": true,
+      "detalhe": "20 x 20 registros"
+    },
+    {
+      "verificacao": "auto-recuperação top-1",
+      "ok": true,
+      "detalhe": "10/10"
+    },
+    {
+      "verificacao": "C01 Leitura por chave primária (lote de 100)",
+      "ok": true,
+      "detalhe": "linhas mysql=100 milvus=100"
+    },
+    {
+      "verificacao": "C03 Condicional simples + ordenação",
+      "ok": true,
+      "detalhe": "linhas mysql=31 milvus=31"
+    },
+    {
+      "verificacao": "C04 Busca por parte do texto (título)",
+      "ok": true,
+      "detalhe": "linhas mysql=799 milvus=799"
+    },
+    {
+      "verificacao": "C05 Agregação por ano (COUNT/AVG/MAX/MIN)",
+      "ok": true,
+      "detalhe": "linhas mysql=38 milvus=38"
+    },
+    {
+      "verificacao": "C06 Busca por parte do nome do ator (JOIN)",
+      "ok": true,
+      "detalhe": "linhas mysql=75 milvus=75"
+    },
+    {
+      "verificacao": "C07 Filmes de um ator: JOIN x documento desnormalizado",
+      "ok": true,
+      "detalhe": "linhas mysql=58 milvus=58"
+    },
+    {
+      "verificacao": "C08 Top-10 atores por nota média (JOIN + GROUP BY + HAVING)",
+      "ok": true,
+      "detalhe": "linhas mysql=10 milvus=10"
+    },
+    {
+      "verificacao": "C09 Agregação por gênero (relação N:N x ARRAY)",
+      "ok": true,
+      "detalhe": "linhas mysql=20 milvus=20"
+    },
+    {
+      "verificacao": "C10 recall@10 (ANN x exato)",
+      "ok": true,
+      "detalhe": "0.90"
+    },
+    {
+      "verificacao": "C11 recall@10 (ANN x exato)",
+      "ok": true,
+      "detalhe": "0.90"
+    },
+    {
+      "verificacao": "C02 atualização refletida e revertida nos dois SGBDs",
+      "ok": true,
+      "detalhe": "100 registros"
+    }
+  ],
+  "exemplos": {
+    "C01": {
+      "mysql": [
+        [
+          563,
+          "Starship Troopers",
+          1997,
+          6.7,
+          1584,
+          "Paul Verhoeven"
+        ],
+        [
+          2977,
+          "Becoming Jane",
+          2007,
+          6.9,
+          325,
+          "Julian Jarrold"
+        ],
+        [
+          3134,
+          "Baise-moi",
+          2000,
+          4.2,
+          75,
+          "Virginie Despentes"
+        ],
+        [
+          4377,
+          "The Child I Never Was",
+          2002,
+          8.0,
+          5,
+          "Kai S. Pieck"
+        ],
+        [
+          4824,
+          "The Jackal",
+          1997,
+          6.1,
+          536,
+          "Michael Caton-Jones"
+        ]
+      ],
+      "milvus": [
+        [
+          563,
+          "Starship Troopers",
+          1997,
+          6.7,
+          1584,
+          "Paul Verhoeven"
+        ],
+        [
+          2977,
+          "Becoming Jane",
+          2007,
+          6.9,
+          325,
+          "Julian Jarrold"
+        ],
+        [
+          3134,
+          "Baise-moi",
+          2000,
+          4.2,
+          75,
+          "Virginie Despentes"
+        ],
+        [
+          4377,
+          "The Child I Never Was",
+          2002,
+          8.0,
+          5,
+          "Kai S. Pieck"
+        ],
+        [
+          4824,
+          "The Jackal",
+          1997,
+          6.1,
+          536,
+          "Michael Caton-Jones"
+        ]
+      ],
+      "linhas_mysql": 100,
+      "linhas_milvus": 100
+    },
+    "C03": {
+      "mysql": [
+        [
+          19404,
+          "Dilwale Dulhania Le Jayenge",
+          9.1,
+          661
+        ],
+        [
+          278,
+          "The Shawshank Redemption",
+          8.5,
+          8358
+        ],
+        [
+          155,
+          "The Dark Knight",
+          8.3,
+          12269
+        ],
+        [
+          550,
+          "Fight Club",
+          8.3,
+          9678
+        ],
+        [
+          680,
+          "Pulp Fiction",
+          8.3,
+          8670
+        ]
+      ],
+      "milvus": [
+        [
+          19404,
+          "Dilwale Dulhania Le Jayenge",
+          9.1,
+          661
+        ],
+        [
+          278,
+          "The Shawshank Redemption",
+          8.5,
+          8358
+        ],
+        [
+          155,
+          "The Dark Knight",
+          8.3,
+          12269
+        ],
+        [
+          550,
+          "Fight Club",
+          8.3,
+          9678
+        ],
+        [
+          680,
+          "Pulp Fiction",
+          8.3,
+          8670
+        ]
+      ],
+      "linhas_mysql": 31,
+      "linhas_milvus": 31
+    },
+    "C04": {
+      "mysql": [
+        [
+          259,
+          "Love on the Run"
+        ],
+        [
+          508,
+          "Love Actually"
+        ],
+        [
+          537,
+          "Not Here to Be Loved"
+        ],
+        [
+          657,
+          "From Russia with Love"
+        ],
+        [
+          691,
+          "The Spy Who Loved Me"
+        ]
+      ],
+      "milvus": [
+        [
+          259,
+          "Love on the Run"
+        ],
+        [
+          508,
+          "Love Actually"
+        ],
+        [
+          537,
+          "Not Here to Be Loved"
+        ],
+        [
+          657,
+          "From Russia with Love"
+        ],
+        [
+          691,
+          "The Spy Who Loved Me"
+        ]
+      ],
+      "linhas_mysql": 799,
+      "linhas_milvus": 799
+    },
+    "C05": {
+      "mysql": [
+        [
+          1980,
+          173,
+          6.165,
+          8.2,
+          2.8
+        ],
+        [
+          1981,
+          178,
+          6.268,
+          8.4,
+          3.2
+        ],
+        [
+          1982,
+          175,
+          6.291,
+          8.0,
+          1.9
+        ],
+        [
+          1983,
+          178,
+          6.161,
+          8.1,
+          2.2
+        ],
+        [
+          1984,
+          177,
+          6.216,
+          8.9,
+          3.3
+        ]
+      ],
+      "milvus": [
+        [
+          1980,
+          173,
+          6.165,
+          8.2,
+          2.8
+        ],
+        [
+          1981,
+          178,
+          6.268,
+          8.4,
+          3.2
+        ],
+        [
+          1982,
+          175,
+          6.291,
+          8.0,
+          1.9
+        ],
+        [
+          1983,
+          178,
+          6.161,
+          8.1,
+          2.2
+        ],
+        [
+          1984,
+          177,
+          6.216,
+          8.9,
+          3.3
+        ]
+      ],
+      "linhas_mysql": 38,
+      "linhas_milvus": 38
+    },
+    "C06": {
+      "mysql": [
+        [
+          2619,
+          "Splash",
+          1984,
+          "Tom Hanks",
+          "Allen Bauer"
+        ],
+        [
+          12309,
+          "Bachelor Party",
+          1984,
+          "Tom Hanks",
+          "Rick Gassko"
+        ],
+        [
+          10905,
+          "The Man with One Red Shoe",
+          1985,
+          "Tom Hanks",
+          "Richard Harlan Drew"
+        ],
+        [
+          19259,
+          "Volunteers",
+          1985,
+          "Tom Hanks",
+          "Lawrence Whatley Bourne III"
+        ],
+        [
+          10466,
+          "The Money Pit",
+          1986,
+          "Tom Hanks",
+          "Walter Fielding, Jr."
+        ]
+      ],
+      "milvus": [
+        [
+          2619,
+          "Splash",
+          1984,
+          "Tom Hanks",
+          "Allen Bauer"
+        ],
+        [
+          12309,
+          "Bachelor Party",
+          1984,
+          "Tom Hanks",
+          "Rick Gassko"
+        ],
+        [
+          10905,
+          "The Man with One Red Shoe",
+          1985,
+          "Tom Hanks",
+          "Richard Harlan Drew"
+        ],
+        [
+          19259,
+          "Volunteers",
+          1985,
+          "Tom Hanks",
+          "Lawrence Whatley Bourne III"
+        ],
+        [
+          10466,
+          "The Money Pit",
+          1986,
+          "Tom Hanks",
+          "Walter Fielding, Jr."
+        ]
+      ],
+      "linhas_mysql": 75,
+      "linhas_milvus": 75
+    },
+    "C07": {
+      "mysql": [
+        [
+          13,
+          "Forrest Gump",
+          1994
+        ],
+        [
+          497,
+          "The Green Mile",
+          1999
+        ],
+        [
+          568,
+          "Apollo 13",
+          1995
+        ],
+        [
+          591,
+          "The Da Vinci Code",
+          2006
+        ],
+        [
+          594,
+          "The Terminal",
+          2004
+        ]
+      ],
+      "milvus": [
+        [
+          13,
+          "Forrest Gump",
+          1994
+        ],
+        [
+          497,
+          "The Green Mile",
+          1999
+        ],
+        [
+          568,
+          "Apollo 13",
+          1995
+        ],
+        [
+          591,
+          "The Da Vinci Code",
+          2006
+        ],
+        [
+          594,
+          "The Terminal",
+          2004
+        ]
+      ],
+      "linhas_mysql": 58,
+      "linhas_milvus": 58
+    },
+    "C08": {
+      "mysql": [
+        [
+          "Toshirō Mifune",
+          11,
+          7.882,
+          8.2
+        ],
+        [
+          "Takashi Shimura",
+          11,
+          7.736,
+          8.2
+        ],
+        [
+          "James Stewart",
+          16,
+          7.55,
+          8.2
+        ],
+        [
+          "Humphrey Bogart",
+          15,
+          7.487,
+          7.9
+        ],
+        [
+          "Cary Grant",
+          14,
+          7.286,
+          7.8
+        ]
+      ],
+      "milvus": [
+        [
+          "Toshirō Mifune",
+          11,
+          7.882,
+          8.2
+        ],
+        [
+          "Takashi Shimura",
+          11,
+          7.736,
+          8.2
+        ],
+        [
+          "James Stewart",
+          16,
+          7.55,
+          8.2
+        ],
+        [
+          "Humphrey Bogart",
+          15,
+          7.487,
+          7.9
+        ],
+        [
+          "Cary Grant",
+          14,
+          7.286,
+          7.8
+        ]
+      ],
+      "linhas_mysql": 10,
+      "linhas_milvus": 10
+    },
+    "C09": {
+      "mysql": [
+        [
+          "Action",
+          4331,
+          5.92,
+          8.3,
+          0.0
+        ],
+        [
+          "Adventure",
+          2406,
+          6.055,
+          8.5,
+          0.0
+        ],
+        [
+          "Animation",
+          1304,
+          6.589,
+          8.9,
+          2.3
+        ],
+        [
+          "Comedy",
+          7477,
+          6.094,
+          9.1,
+          0.0
+        ],
+        [
+          "Crime",
+          2682,
+          6.313,
+          8.8,
+          0.0
+        ]
+      ],
+      "milvus": [
+        [
+          "Action",
+          4331,
+          5.92,
+          8.3,
+          0.0
+        ],
+        [
+          "Adventure",
+          2406,
+          6.055,
+          8.5,
+          0.0
+        ],
+        [
+          "Animation",
+          1304,
+          6.589,
+          8.9,
+          2.3
+        ],
+        [
+          "Comedy",
+          7477,
+          6.094,
+          9.1,
+          0.0
+        ],
+        [
+          "Crime",
+          2682,
+          6.313,
+          8.8,
+          0.0
+        ]
+      ],
+      "linhas_mysql": 20,
+      "linhas_milvus": 20
+    },
+    "C10": {
+      "mysql": [
+        [
+          70190,
+          "Scarred City",
+          0.681
+        ],
+        [
+          25728,
+          "The Mob",
+          0.6664
+        ],
+        [
+          25672,
+          "Hollow Triumph",
+          0.6597
+        ],
+        [
+          13553,
+          "The Driller Killer",
+          0.6575
+        ],
+        [
+          136911,
+          "The Factory",
+          0.6531
+        ]
+      ],
+      "milvus": [
+        [
+          70190,
+          "Scarred City",
+          0.6812
+        ],
+        [
+          25728,
+          "The Mob",
+          0.6654
+        ],
+        [
+          25672,
+          "Hollow Triumph",
+          0.6573
+        ],
+        [
+          13553,
+          "The Driller Killer",
+          0.6559
+        ],
+        [
+          136911,
+          "The Factory",
+          0.6552
+        ]
+      ],
+      "linhas_mysql": 10,
+      "linhas_milvus": 10,
+      "recall@10": 0.9
+    },
+    "C11": {
+      "mysql": [
+        [
+          1272,
+          "Sunshine",
+          0.6161
+        ],
+        [
+          131433,
+          "Freedom",
+          0.578
+        ],
+        [
+          119450,
+          "Dawn of the Planet of the Apes",
+          0.5466
+        ],
+        [
+          365942,
+          "The Space Between Us",
+          0.5196
+        ],
+        [
+          24357,
+          "Final Flight of the Osiris",
+          0.4979
+        ]
+      ],
+      "milvus": [
+        [
+          1272,
+          "Sunshine",
+          0.6162
+        ],
+        [
+          131433,
+          "Freedom",
+          0.5769
+        ],
+        [
+          119450,
+          "Dawn of the Planet of the Apes",
+          0.5444
+        ],
+        [
+          365942,
+          "The Space Between Us",
+          0.5252
+        ],
+        [
+          24357,
+          "Final Flight of the Osiris",
+          0.5051
+        ]
+      ],
+      "linhas_mysql": 10,
+      "linhas_milvus": 10,
+      "recall@10": 0.9
+    },
+    "C12": {
+      "mysql": [
+        [
+          39347,
+          "Hello Brother",
+          32.2709
+        ],
+        [
+          49010,
+          "Hobo with a Shotgun",
+          17.521
+        ],
+        [
+          12780,
+          "Iron Monkey",
+          17.0294
+        ],
+        [
+          49029,
+          "Saamy",
+          16.279
+        ],
+        [
+          38665,
+          "The Legend of the Lone Ranger",
+          15.4835
+        ]
+      ],
+      "milvus": [
+        [
+          70190,
+          "Scarred City",
+          0.6812
+        ],
+        [
+          25728,
+          "The Mob",
+          0.6654
+        ],
+        [
+          25672,
+          "Hollow Triumph",
+          0.6573
+        ],
+        [
+          13553,
+          "The Driller Killer",
+          0.6559
+        ],
+        [
+          136911,
+          "The Factory",
+          0.6552
+        ]
+      ],
+      "linhas_mysql": 10,
+      "linhas_milvus": 10
+    }
+  },
+  "falhas": 0
+}

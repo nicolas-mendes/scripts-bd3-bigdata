@@ -1,0 +1,46 @@
+{
+  "ambiente": {
+    "data": "2026-11-08T22:10:52",
+    "perfil": "dev",
+    "so": "Windows-11-10.0.26200-SP0",
+    "processador": "AMD Ryzen 5 5600 6-Core Processor",
+    "python": "3.13.5",
+    "pymilvus": "3.0.2",
+    "milvus_modo": "zilliz",
+    "modelo_embedding": "paraphrase-multilingual-MiniLM-L12-v2",
+    "dimensao": 384,
+    "ram_gb": "31,9",
+    "milvus_versao": "Zilliz Cloud Vector Database(Compatible with Milvus 3.0)"
+  },
+  "linhas": {
+    "filmes": 2000,
+    "elenco": 9991
+  },
+  "insercao_s": {
+    "filmes": 8.453,
+    "elenco": 11.477
+  },
+  "indexacao": {
+    "filmes": {
+      "indice_vetorial_s": 2.078,
+      "indices_escalares_s": 6.647,
+      "load_s": 2.639
+    },
+    "elenco": {
+      "indice_vetorial_s": 5.759,
+      "indices_escalares_s": 5.014,
+      "load_s": 3.297
+    }
+  },
+  "estatisticas": {
+    "filmes": {
+      "row_count": 2000
+    },
+    "elenco": {
+      "row_count": 9991
+    }
+  },
+  "insercao_total_s": 19.93,
+  "indexacao_total_s": 25.434,
+  "vetores_bytes_brutos": 18418176
+}

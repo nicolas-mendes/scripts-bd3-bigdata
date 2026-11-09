@@ -1,0 +1,42 @@
+{
+  "filmes": 44213,
+  "elenco_linhas": 197433,
+  "atores_distintos": 71521,
+  "generos_distintos": 20,
+  "ano_min": 1874,
+  "ano_max": 2020,
+  "nota_media": 5.649,
+  "sinopse_media_caracteres": 324.5,
+  "atributos_filme": [
+    "id",
+    "titulo",
+    "titulo_original",
+    "sinopse",
+    "ano",
+    "data_lancamento",
+    "nota",
+    "votos",
+    "popularidade",
+    "orcamento",
+    "receita",
+    "duracao",
+    "idioma",
+    "generos",
+    "palavras_chave",
+    "diretor",
+    "elenco_principal"
+  ],
+  "atributos_elenco": [
+    "id",
+    "filme_id",
+    "ordem",
+    "ator",
+    "personagem",
+    "genero_ator"
+  ],
+  "tempos_s": {
+    "limpeza_integracao": 28.03,
+    "vetorizacao_filmes": 705.0,
+    "vetorizacao_elenco": 483.21
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "ambiente": {
+    "data": "2026-11-08T22:11:23",
+    "perfil": "dev",
+    "so": "Windows-11-10.0.26200-SP0",
+    "processador": "AMD Ryzen 5 5600 6-Core Processor",
+    "python": "3.13.5",
+    "pymilvus": "3.0.2",
+    "milvus_modo": "zilliz",
+    "modelo_embedding": "paraphrase-multilingual-MiniLM-L12-v2",
+    "dimensao": 384,
+    "ram_gb": "31,9",
+    "mysql_versao": "8.4.13"
+  },
+  "linhas": {
+    "filmes": 2000,
+    "generos": 19,
+    "filme_genero": 5519,
+    "elenco": 9991,
+    "filmes_vetores": 2000
+  },
+  "insercao_s": {
+    "filmes": 0.362,
+    "generos": 0.004,
+    "filme_genero": 0.124,
+    "elenco": 1.263,
+    "filmes_vetores": 0.57
+  },
+  "insercao_total_s": 2.323,
+  "indexacao_s": 1.041,
+  "espaco": {
+    "elenco": {
+      "linhas_estimadas": 10262,
+      "dados_bytes": 1589248,
+      "indices_bytes": 507904
+    },
+    "filme_genero": {
+      "linhas_estimadas": 5519,
+      "dados_bytes": 180224,
+      "indices_bytes": 98304
+    },
+    "filmes": {
+      "linhas_estimadas": 1926,
+      "dados_bytes": 1589248,
+      "indices_bytes": 278528
+    },
+    "filmes_vetores": {
+      "linhas_estimadas": 1784,
+      "dados_bytes": 3686400,
+      "indices_bytes": 0
+    },
+    "generos": {
+      "linhas_estimadas": 19,
+      "dados_bytes": 16384,
+      "indices_bytes": 16384
+    }
+  }
+}

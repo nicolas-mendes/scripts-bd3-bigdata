@@ -1,0 +1,24 @@
+\begin{table}[ht]
+\centering
+\caption{Tempo médio de execução em ms (n = 3) -- MySQL x Milvus (zilliz), base com 2000 filmes}
+\label{tab:resultados}
+\small
+\begin{tabular}{|c|l|r|r|}
+\hline
+\textbf{Cód.} & \textbf{Operação} & \textbf{MySQL} & \textbf{Milvus} \\ \hline
+-- & Importação (inserção em lotes) & 2.323,0 & 19.930,0 \\ \hline
+-- & Indexação (+ load no Milvus) & 1.041,0 & 25.434,0 \\ \hline
+C01 & Leitura por chave primária (lote de 100) & 1,7 & 206,8 \\ \hline
+C02 & Atualização em lote (100 registros) & 4,1 & 991,3 \\ \hline
+C03 & Condicional simples + ordenação & 1,0 & 198,5 \\ \hline
+C04 & Busca por parte do texto (título) & 1,1 & 195,4 \\ \hline
+C05 & Agregação por ano (COUNT/AVG/MAX/MIN) & 2,5 & 957,6 \\ \hline
+C06 & Busca por parte do nome do ator (JOIN) & 3,2 & 424,1 \\ \hline
+C07 & Filmes de um ator: JOIN x documento desnormalizado & 0,7 & 202,4 \\ \hline
+C08 & Top-10 atores por nota média (JOIN + GROUP BY + HAVING) & 14,7 & 2.116,6 \\ \hline
+C09 & Agregação por gênero (relação N:N x ARRAY) & 8,4 & 993,5 \\ \hline
+C10 & Busca semântica kNN top-10 (consulta em português) & 12,4 & 202,9 \\ \hline
+C11 & Busca híbrida: similaridade + filtros (nota, ano, gênero) & 2,6 & 206,1 \\ \hline
+C12 & Linguagem natural: FULLTEXT (léxico) x semântica & 0,9 & 208,5 \\ \hline
+\end{tabular}
+\end{table}
