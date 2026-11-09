@@ -1,24 +1,16 @@
-﻿# Ambientes e credenciais
-.env
-.env.*
-.venv/
-env/
+﻿.env
 
-# Cache Python
 __pycache__/
 *.pyc
-*.pyo
+*.pyo 
 
-# Arquivos temporários e zips
 *.zip
 .old/
-
-# Dados brutos pesados e caches de download (HuggingFace)
+ 
 dados/brutos/
 dados/**/.cache/
 *.npy
 
-# Logs de tarefas locais
 *.log
 
 material/
