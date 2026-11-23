@@ -16,6 +16,18 @@ LOTE_ITERADOR = 8_000
 TEXTO_SEMANTICO = "Um herói mascarado combatendo o crime em uma cidade corrompida"
 TEXTO_LEXICO_EN = "masked hero fighting crime in a corrupt city"
 TEXTO_HIBRIDO = "Uma missão no espaço para salvar a humanidade da extinção"
+TEXTOS_LOTE = [
+    TEXTO_SEMANTICO,
+    TEXTO_HIBRIDO,
+    "Uma investigação policial cheia de mistério e reviravoltas",
+    "Um romance histórico ambientado na Europa do século dezenove",
+    "Uma aventura medieval épica com cavaleiros e dragões",
+    "Uma comédia familiar divertida sobre animais falantes",
+    "A biografia inspiradora de um músico superando dificuldades",
+    "Sobrevivência extrema na selva após um acidente aéreo",
+    "Viagem no tempo criando paradoxos perigosos no futuro",
+    "Estratégias militares e drama humano na segunda guerra mundial",
+]
 CAMPOS_LEITURA = ["id", "titulo", "ano", "nota", "votos", "diretor"]
 
 
@@ -39,11 +51,12 @@ def preparar_parametros(cfg: Config, conexao_mysql) -> dict:
     with conexao_mysql.cursor() as cur:
         cur.execute("SELECT id FROM filmes ORDER BY id")
         ids = [r[0] for r in cur.fetchall()]
-    vetores = vetorizar([TEXTO_SEMANTICO, TEXTO_HIBRIDO])
+    vetores = vetorizar(TEXTOS_LOTE)
     return {
         "ids_amostra": sorted(random.Random(SEMENTE).sample(ids, min(100, len(ids)))),
         "vetor_semantico": vetores[0],
         "vetor_hibrido": vetores[1],
+        "vetores_lote": vetores,
         "texto_lexico": TEXTO_LEXICO_EN,
         "termo_titulo": "Love",
         "ator_parcial": "Hanks",
@@ -329,23 +342,33 @@ def c08_milvus(ctx: Contexto):
 
 
 def c09_mysql(ctx: Contexto):
-    linhas = sql_todos(
-        ctx,
-        "SELECT g.nome, COUNT(*), AVG(f.nota), MAX(f.nota), MIN(f.nota) "
-        "FROM generos g JOIN filme_genero fg ON fg.genero_id = g.id "
-        "JOIN filmes f ON f.id = fg.filme_id WHERE f.votos >= 10 "
-        "GROUP BY g.nome ORDER BY g.nome",
-    )
-    return [(r[0], r[1], round(float(r[2]), 3), float(r[3]), float(r[4])) for r in linhas]
+    consultas = ctx.p["vetores_lote"]
+    k = ctx.p["top_k"]
+    saida = []
+    for q in range(len(consultas)):
+        linhas = sql_todos(ctx, "SELECT filme_id, vetor FROM filmes_vetores")
+        ids = np.fromiter((r[0] for r in linhas), dtype=np.int64, count=len(linhas))
+        matriz = blobs_para_matriz([r[1] for r in linhas])
+        ranking = titulos_mysql(ctx, top_k_exato(ids, matriz, consultas[q], k))
+        for fid, titulo, s in ranking:
+            saida.append(((q, fid), titulo, s))
+    return saida
 
 
 def c09_milvus(ctx: Contexto):
-    linhas = milvus_iterar(ctx, ctx.cf, "votos >= 10", ["generos", "nota"])
-    acc: dict[str, list[float]] = defaultdict(list)
-    for r in linhas:
-        for g in set(r["generos"]):
-            acc[g].append(round(float(r["nota"]), 1))
-    return [(g, len(v), round(sum(v) / len(v), 3), max(v), min(v)) for g, v in sorted(acc.items())]
+    res = ctx.milvus.search(
+        collection_name=ctx.cf,
+        data=ctx.p["vetores_lote"].tolist(),
+        anns_field="vetor",
+        limit=ctx.p["top_k"],
+        output_fields=["titulo"],
+        search_params=ctx.cfg.parametros_busca,
+    )
+    saida = []
+    for q, hits in enumerate(res):
+        for h in hits:
+            saida.append(((q, int(h["id"])), h["entity"]["titulo"], round(float(h["distance"]), 4)))
+    return saida
 
 
 def c10_mysql(ctx: Contexto):
@@ -511,13 +534,13 @@ CONSULTAS: list[Consulta] = [
     ),
     Consulta(
         "C09",
-        "Agregacao por genero (N:N x ARRAY)",
-        "Duas tabelas",
-        "SELECT g.nome, COUNT(*), AVG(f.nota), MAX(f.nota), MIN(f.nota) FROM generos g "
-        "JOIN filme_genero fg ON ... JOIN filmes f ON ... WHERE f.votos >= 10 GROUP BY g.nome",
-        "query_iterator(filmes, output_fields=['generos', 'nota']) + groupby",
+        "Busca semantica em lote (10 consultas x top-10)",
+        "Vetorial",
+        "10x (SELECT filme_id, vetor FROM filmes_vetores + cosseno)",
+        "client.search(data=[10 vetores], anns_field='vetor', limit=10)",
         c09_mysql,
         c09_milvus,
+        "recall",
     ),
     Consulta(
         "C10",

@@ -6,8 +6,8 @@
 \begin{tabular}{|c|l|r|r|}
 \hline
 \textbf{Cód.} & \textbf{Operação} & \textbf{MySQL} & \textbf{Milvus} \\ \hline
--- & Importação (inserção em lotes) & 22.465,0 & 148.569,0 \\ \hline
--- & Indexação (+ load no Milvus) & 5.560,0 & 61.528,0 \\ \hline
+-- & Importacao (lotes) & 22.465,0 & 148.569,0 \\ \hline
+-- & Indexacao (+ load) & 5.560,0 & 61.528,0 \\ \hline
 C01 & Leitura por chave primária (lote de 100) & 1,7 & 204,2 \\ \hline
 C02 & Atualização em lote (100 registros) & 5,3 & 765,0 \\ \hline
 C03 & Condicional simples + ordenação & 0,9 & 199,8 \\ \hline
@@ -16,7 +16,7 @@ C05 & Agregação por ano (COUNT/AVG/MAX/MIN) & 44,8 & 1.505,2 \\ \hline
 C06 & Busca por parte do nome do ator (JOIN) & 39,7 & 398,4 \\ \hline
 C07 & Filmes de um ator: JOIN x documento desnormalizado & 0,8 & 198,1 \\ \hline
 C08 & Top-10 atores por nota média (JOIN + GROUP BY + HAVING) & 94,7 & 9.661,9 \\ \hline
-C09 & Agregação por gênero (relação N:N x ARRAY) & 81,0 & 1.946,1 \\ \hline
+C09 & Busca semantica em lote (10 consultas x top-10) & 3.047,3 & 315,2 \\ \hline
 C10 & Busca semântica kNN top-10 (consulta em português) & 245,2 & 203,3 \\ \hline
 C11 & Busca híbrida: similaridade + filtros (nota, ano, gênero) & 10,7 & 203,6 \\ \hline
 C12 & Linguagem natural: FULLTEXT (léxico) x semântica & 3,5 & 206,6 \\ \hline

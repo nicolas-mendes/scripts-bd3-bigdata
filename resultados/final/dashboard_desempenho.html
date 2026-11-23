@@ -1,0 +1,1458 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light dark">
+  <title>Desempenho Comparativo — MySQL 8.4 vs. Milvus 3.0 (Zilliz Cloud)</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+
+      /* Raw color tokens */
+      --bg-light: #f6f7f9;
+      --bg-dark: #0d1117;
+      --surface-light: #ffffff;
+      --surface-dark: #151b23;
+      --surface-alt-light: #eef1f6;
+      --surface-alt-dark: #1c2430;
+      --border-light: #dce2ec;
+      --border-dark: #2a3444;
+      --text-light: #111827;
+      --text-dark: #f0f4f8;
+      --muted-light: #4b5563;
+      --muted-dark: #9aa7b8;
+
+      --mysql-light: #1d4ed8;
+      --mysql-dark: #60a5fa;
+      --milvus-real-light: #6d28d9;
+      --milvus-real-dark: #a78bfa;
+      --milvus-proj-light: #047857;
+      --milvus-proj-dark: #34d399;
+      --warn-light: #b45309;
+      --warn-dark: #fbbf24;
+
+      --win-mysql-bg-light: #dbeafe;
+      --win-mysql-bg-dark: #172554;
+      --win-milvus-bg-light: #d1fae5;
+      --win-milvus-bg-dark: #064e3b;
+      --win-tie-bg-light: #fef3c7;
+      --win-tie-bg-dark: #451a03;
+
+      /* Fallback defaults (light) */
+      --bg: var(--bg-light);
+      --surface: var(--surface-light);
+      --surface-alt: var(--surface-alt-light);
+      --border: var(--border-light);
+      --text: var(--text-light);
+      --muted: var(--muted-light);
+      --mysql: var(--mysql-light);
+      --milvus-real: var(--milvus-real-light);
+      --milvus-proj: var(--milvus-proj-light);
+      --warn: var(--warn-light);
+      --win-mysql-bg: var(--win-mysql-bg-light);
+      --win-milvus-bg: var(--win-milvus-bg-light);
+      --win-tie-bg: var(--win-tie-bg-light);
+
+      --radius: 14px;
+      --radius-sm: 9px;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.05), 0 8px 24px rgba(0, 0, 0, 0.05);
+
+      @media (prefers-color-scheme: dark) {
+        --bg: var(--bg-dark);
+        --surface: var(--surface-dark);
+        --surface-alt: var(--surface-alt-dark);
+        --border: var(--border-dark);
+        --text: var(--text-dark);
+        --muted: var(--muted-dark);
+        --mysql: var(--mysql-dark);
+        --milvus-real: var(--milvus-real-dark);
+        --milvus-proj: var(--milvus-proj-dark);
+        --warn: var(--warn-dark);
+        --win-mysql-bg: var(--win-mysql-bg-dark);
+        --win-milvus-bg: var(--win-milvus-bg-dark);
+        --win-tie-bg: var(--win-tie-bg-dark);
+        --shadow: 0 1px 2px rgba(0, 0, 0, 0.35), 0 12px 28px rgba(0, 0, 0, 0.35);
+      }
+
+      @supports (color: light-dark(white, black)) {
+        --bg: light-dark(var(--bg-light), var(--bg-dark));
+        --surface: light-dark(var(--surface-light), var(--surface-dark));
+        --surface-alt: light-dark(var(--surface-alt-light), var(--surface-alt-dark));
+        --border: light-dark(var(--border-light), var(--border-dark));
+        --text: light-dark(var(--text-light), var(--text-dark));
+        --muted: light-dark(var(--muted-light), var(--muted-dark));
+        --mysql: light-dark(var(--mysql-light), var(--mysql-dark));
+        --milvus-real: light-dark(var(--milvus-real-light), var(--milvus-real-dark));
+        --milvus-proj: light-dark(var(--milvus-proj-light), var(--milvus-proj-dark));
+        --warn: light-dark(var(--warn-light), var(--warn-dark));
+        --win-mysql-bg: light-dark(var(--win-mysql-bg-light), var(--win-mysql-bg-dark));
+        --win-milvus-bg: light-dark(var(--win-milvus-bg-light), var(--win-milvus-bg-dark));
+        --win-tie-bg: light-dark(var(--win-tie-bg-light), var(--win-tie-bg-dark));
+      }
+
+      accent-color: var(--mysql);
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, Inter, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .page {
+      max-inline-size: 1220px;
+      margin-inline: auto;
+      padding: clamp(1rem, 3vw, 2.25rem);
+      display: grid;
+      gap: 1.5rem;
+    }
+
+    /* Header */
+    .hero {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: clamp(1.25rem, 3vw, 2rem);
+      box-shadow: var(--shadow);
+      display: grid;
+      gap: 1rem;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      align-items: center;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .eyebrow span {
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      padding: 0.2rem 0.6rem;
+      border-radius: 999px;
+    }
+
+    .hero h1 {
+      margin: 0;
+      font-size: clamp(1.45rem, 2.8vw, 2.15rem);
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+    }
+
+    .hero p {
+      margin: 0;
+      color: var(--muted);
+      max-inline-size: 78ch;
+      font-size: 0.96rem;
+    }
+
+    .legend-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem 1.25rem;
+      padding-block-start: 0.75rem;
+      border-block-start: 1px solid var(--border);
+      font-size: 0.86rem;
+      align-items: center;
+    }
+
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      font-weight: 500;
+    }
+
+    .swatch {
+      inline-size: 12px;
+      block-size: 12px;
+      border-radius: 3px;
+      flex: none;
+    }
+
+    .swatch.mysql { background: var(--mysql); }
+    .swatch.real { background: var(--milvus-real); }
+    .swatch.proj { background: var(--milvus-proj); }
+    .swatch.rtt {
+      background: repeating-linear-gradient(
+        -45deg,
+        var(--milvus-real),
+        var(--milvus-real) 3px,
+        transparent 3px,
+        transparent 6px
+      );
+      border: 1px solid var(--milvus-real);
+    }
+
+    /* KPI Strip */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 1rem;
+    }
+
+    .kpi {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.1rem 1.25rem;
+      box-shadow: var(--shadow);
+      display: grid;
+      gap: 0.3rem;
+    }
+
+    .kpi-label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .kpi-value {
+      font-size: 1.65rem;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -0.02em;
+    }
+
+    .kpi-value.mysql { color: var(--mysql); }
+    .kpi-value.proj { color: var(--milvus-proj); }
+    .kpi-value.real { color: var(--milvus-real); }
+
+    .kpi-sub {
+      font-size: 0.83rem;
+      color: var(--muted);
+    }
+
+    /* Section card */
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: clamp(1rem, 2.5vw, 1.5rem);
+      box-shadow: var(--shadow);
+      display: grid;
+      gap: 1.15rem;
+    }
+
+    .panel-head {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 0.75rem 1.25rem;
+    }
+
+    .panel-head h2 {
+      margin: 0;
+      font-size: 1.18rem;
+      letter-spacing: -0.01em;
+    }
+
+    .panel-head p {
+      margin: 0.2rem 0 0;
+      font-size: 0.86rem;
+      color: var(--muted);
+    }
+
+    /* Controls */
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.65rem 1rem;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 0.65rem 0.85rem;
+    }
+
+    .btn-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+      align-items: center;
+    }
+
+    .btn-group-label {
+      font-size: 0.76rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--muted);
+      margin-inline-end: 0.25rem;
+    }
+
+    .chip {
+      appearance: none;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      font: inherit;
+      font-size: 0.82rem;
+      font-weight: 600;
+      padding: 0.38rem 0.72rem;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: background-color 140ms ease, border-color 140ms ease, color 140ms ease;
+    }
+
+    .chip:hover {
+      border-color: var(--mysql);
+    }
+
+    .chip[aria-pressed="true"] {
+      background: var(--mysql);
+      border-color: var(--mysql);
+      color: #ffffff;
+    }
+
+    /* Visual chart list (size-aware with container queries) */
+    .chart-list {
+      display: grid;
+      gap: 0.75rem;
+    }
+
+    .q-wrap {
+      container-type: inline-size;
+    }
+
+    .q-card {
+      width: 100%;
+      text-align: start;
+      font: inherit;
+      color: inherit;
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 0.9rem 1rem;
+      display: grid;
+      gap: 0.7rem;
+      cursor: pointer;
+      transition: border-color 140ms ease, transform 140ms ease;
+    }
+
+    .q-card:hover {
+      border-color: var(--mysql);
+      transform: translateY(-1px);
+    }
+
+    .q-card:focus-visible {
+      outline: 2px solid var(--mysql);
+      outline-offset: 2px;
+    }
+
+    .q-top {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.4rem 0.75rem;
+    }
+
+    .q-title-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .q-code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.8rem;
+      font-weight: 800;
+      padding: 0.16rem 0.5rem;
+      border-radius: 6px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+    }
+
+    .q-title {
+      font-weight: 700;
+      font-size: 0.94rem;
+    }
+
+    .q-cat {
+      font-size: 0.74rem;
+      color: var(--muted);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 0.12rem 0.48rem;
+      border-radius: 999px;
+    }
+
+    .q-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+      align-items: center;
+    }
+
+    .badge {
+      font-size: 0.74rem;
+      font-weight: 700;
+      padding: 0.18rem 0.55rem;
+      border-radius: 999px;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+
+    .badge.mysql {
+      background: var(--win-mysql-bg);
+      color: var(--mysql);
+    }
+
+    .badge.milvus {
+      background: var(--win-milvus-bg);
+      color: var(--milvus-proj);
+    }
+
+    .badge.tie {
+      background: var(--win-tie-bg);
+      color: var(--warn);
+    }
+
+    .badge.recall {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--muted);
+    }
+
+    /* Bars grid */
+    .bars {
+      display: grid;
+      gap: 0.42rem;
+    }
+
+    .bar-row {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0.25rem;
+      align-items: center;
+    }
+
+    @media (min-width: 640px) {
+      .bar-row {
+        grid-template-columns: 158px 1fr 154px;
+        gap: 0.75rem;
+      }
+    }
+
+    @supports (container-type: inline-size) {
+      @media (min-width: 640px) {
+        .bar-row {
+          grid-template-columns: 1fr;
+          gap: 0.25rem;
+        }
+      }
+      @container (min-width: 560px) {
+        .bar-row {
+          grid-template-columns: 158px 1fr 158px;
+          gap: 0.75rem;
+        }
+      }
+    }
+
+    .bar-row[hidden] {
+      display: none;
+    }
+
+    .bar-label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .bar-track {
+      block-size: 16px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      overflow: hidden;
+      display: flex;
+      align-items: stretch;
+    }
+
+    .bar-fill {
+      block-size: 100%;
+      border-radius: 999px;
+      min-inline-size: 4px;
+      transition: inline-size 280ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .bar-fill.mysql { background: var(--mysql); }
+    .bar-fill.proj { background: var(--milvus-proj); }
+
+    .bar-fill.real-core {
+      background: var(--milvus-proj);
+      border-radius: 999px 0 0 999px;
+      min-inline-size: 2px;
+    }
+
+    .bar-fill.real-net {
+      background: repeating-linear-gradient(
+        -45deg,
+        var(--milvus-real),
+        var(--milvus-real) 5px,
+        color-mix(in srgb, var(--milvus-real) 55%, transparent) 5px,
+        color-mix(in srgb, var(--milvus-real) 55%, transparent) 10px
+      );
+      border-radius: 0 999px 999px 0;
+    }
+
+    .bar-val {
+      font-size: 0.82rem;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      text-align: end;
+      white-space: nowrap;
+    }
+
+    .bar-val .sub {
+      font-weight: 500;
+      color: var(--muted);
+      font-size: 0.75rem;
+    }
+
+    /* Two-column infrastructure summary */
+    .infra-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+      gap: 1rem;
+    }
+
+    .infra-box {
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 1rem 1.1rem;
+      display: grid;
+      gap: 0.65rem;
+    }
+
+    .infra-box h3 {
+      margin: 0;
+      font-size: 0.96rem;
+    }
+
+    .infra-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 0.75rem;
+      font-size: 0.85rem;
+      padding-block: 0.35rem;
+      border-block-end: 1px dashed var(--border);
+    }
+
+    .infra-row:last-child {
+      border-block-end: none;
+    }
+
+    .infra-row strong {
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Responsive table (modern-web-guidance: responsive-table) */
+    .table-wrapper {
+      overflow: auto;
+      max-inline-size: 100%;
+      max-block-size: min(560px, 75vh);
+      container-type: inline-size;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+    }
+
+    .table-wrapper:focus-visible {
+      outline: 2px solid var(--mysql);
+      outline-offset: 2px;
+    }
+
+    table {
+      inline-size: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      font-size: 0.84rem;
+      font-variant-numeric: tabular-nums;
+      --label-1: "Consulta";
+      --label-2: "Operação";
+      --label-3: "MySQL (ms)";
+      --label-4: "Milvus Real (ms)";
+      --label-5: "Milvus Proj. (ms)";
+      --label-6: "Req. (k)";
+      --label-7: "Vencedor (Real / Proj.)";
+    }
+
+    caption {
+      text-align: start;
+      padding: 0.75rem 1rem;
+      font-size: 0.82rem;
+      color: var(--muted);
+      background: var(--surface-alt);
+      border-block-end: 1px solid var(--border);
+    }
+
+    thead {
+      position: sticky;
+      inset-block-start: 0;
+      z-index: 2;
+      background: var(--surface-alt);
+    }
+
+    th, td {
+      padding: 0.62rem 0.75rem;
+      border-block-end: 1px solid var(--border);
+      text-align: start;
+      vertical-align: middle;
+    }
+
+    thead th {
+      font-size: 0.76rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    th.num, td.num {
+      text-align: end;
+      white-space: nowrap;
+    }
+
+    tbody tr {
+      background: var(--surface);
+      cursor: pointer;
+    }
+
+    tbody tr:hover {
+      background: var(--surface-alt);
+    }
+
+    tbody th {
+      position: sticky;
+      inset-inline-start: 0;
+      z-index: 1;
+      background: inherit;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .win-num {
+      font-weight: 800;
+    }
+
+    .win-num.mysql { color: var(--mysql); }
+    .win-num.milvus { color: var(--milvus-proj); }
+
+    @container (width < 700px) {
+      table, thead, tbody, tr, th, td {
+        display: block;
+      }
+
+      thead {
+        display: none;
+      }
+
+      tbody tr {
+        margin: 0.75rem;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        overflow: hidden;
+      }
+
+      tbody th {
+        position: sticky;
+        inset-block-start: 0;
+        z-index: 2;
+        background: var(--surface-alt);
+        border-block-end: 1px solid var(--border);
+      }
+
+      td, td.num {
+        text-align: start;
+        display: flex;
+        justify-content: space-between;
+        gap: 0.75rem;
+        white-space: normal;
+      }
+
+      td:nth-child(2)::before { content: var(--label-2) ": "; font-weight: 600; color: var(--muted); }
+      td:nth-child(3)::before { content: var(--label-3) ": "; font-weight: 600; color: var(--muted); }
+      td:nth-child(4)::before { content: var(--label-4) ": "; font-weight: 600; color: var(--muted); }
+      td:nth-child(5)::before { content: var(--label-5) ": "; font-weight: 600; color: var(--muted); }
+      td:nth-child(6)::before { content: var(--label-6) ": "; font-weight: 600; color: var(--muted); }
+      td:nth-child(7)::before { content: var(--label-7) ": "; font-weight: 600; color: var(--muted); }
+    }
+
+    /* Native modal dialog (modern-web-guidance: dialog) */
+    dialog {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--text);
+      padding: 0;
+      inline-size: min(680px, calc(100vw - 2rem));
+      max-block-size: min(85vh, 720px);
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+    }
+
+    dialog[open] {
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+    }
+
+    dialog:modal {
+      overscroll-behavior: contain;
+    }
+
+    dialog::backdrop {
+      background: rgba(9, 13, 22, 0.62);
+      backdrop-filter: blur(4px);
+      overflow: hidden;
+      overscroll-behavior: contain;
+    }
+
+    .dlg-head {
+      padding: 1.15rem 1.35rem;
+      border-block-end: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      gap: 1rem;
+    }
+
+    .dlg-head h1 {
+      margin: 0;
+      font-size: 1.15rem;
+      line-height: 1.3;
+    }
+
+    .dlg-body {
+      padding: 1.15rem 1.35rem;
+      overflow: auto;
+      display: grid;
+      gap: 1rem;
+    }
+
+    .dlg-metrics {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(165px, 1fr));
+      gap: 0.7rem;
+    }
+
+    .dlg-stat {
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 0.75rem;
+      display: grid;
+      gap: 0.2rem;
+    }
+
+    .dlg-stat .k {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .dlg-stat .v {
+      font-size: 1.18rem;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .dlg-stat .m {
+      font-size: 0.76rem;
+      color: var(--muted);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .code-block {
+      display: grid;
+      gap: 0.3rem;
+    }
+
+    .code-block span {
+      font-size: 0.76rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--muted);
+    }
+
+    pre {
+      margin: 0;
+      padding: 0.75rem 0.9rem;
+      border-radius: var(--radius-sm);
+      background: #0f172a;
+      color: #e2e8f0;
+      color-scheme: dark;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.79rem;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .dlg-note {
+      margin: 0;
+      font-size: 0.88rem;
+      padding: 0.75rem 0.9rem;
+      border-radius: var(--radius-sm);
+      background: var(--surface-alt);
+      border-inline-start: 3px solid var(--mysql);
+    }
+
+    .dlg-foot {
+      padding: 0.85rem 1.35rem;
+      border-block-start: 1px solid var(--border);
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .btn-close {
+      appearance: none;
+      border: 1px solid var(--border);
+      background: var(--surface-alt);
+      color: var(--text);
+      font: inherit;
+      font-size: 0.84rem;
+      font-weight: 600;
+      padding: 0.45rem 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .btn-close:hover {
+      border-color: var(--mysql);
+    }
+
+    footer {
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--muted);
+      padding-block-end: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="hero">
+      <div class="eyebrow">
+        <span>DS340 · Banco de Dados 3 · UFPR</span>
+        <span>Base TMDB Final · 44.213 filmes · 197.433 elenco · 384d</span>
+        <span>n = 5 execuções (pós-aquecimento)</span>
+      </div>
+      <h1>Desempenho Comparativo: MySQL 8.4 vs. Milvus 3.0</h1>
+      <p>
+        Comparação direta entre o SGBD relacional <strong>MySQL 8.4</strong> (Docker local, ping de 0,5 ms)
+        e o SGBD vetorial <strong>Milvus 3.0 / Zilliz Cloud</strong> (nuvem, RTT mínimo de 190,7 ms por requisição).
+        O <strong>Tempo Projetado</strong> (<code>T_proj = T_real − k × 190,7 ms</code>) isola o processamento interno do motor vetorial.
+        Clique em qualquer consulta para inspecionar SQL, chamada SDK e as 5 amostras medidas.
+      </p>
+      <div class="legend-bar" aria-label="Legenda de cores">
+        <span class="legend-item"><span class="swatch mysql"></span> MySQL 8.4 (Local)</span>
+        <span class="legend-item"><span class="swatch proj"></span> Milvus Projetado (Motor s/ rede)</span>
+        <span class="legend-item"><span class="swatch rtt"></span> Latência de rede Zilliz (k × 190,7 ms)</span>
+        <span class="legend-item"><span class="swatch real"></span> Milvus Real = Motor + Rede</span>
+      </div>
+    </header>
+
+    <section class="kpi-grid" aria-label="Indicadores principais">
+      <article class="kpi">
+        <span class="kpi-label">Placar Geral (C01–C12)</span>
+        <span class="kpi-value">10 × 2 <span style="font-size:0.9rem;font-weight:600;color:var(--muted)">Real</span></span>
+        <span class="kpi-sub">No tempo projetado: MySQL 7 · Milvus 4 · Empate 1 (C11)</span>
+      </article>
+      <article class="kpi">
+        <span class="kpi-label">Maior Vitória Vetorial (C09)</span>
+        <span class="kpi-value proj">24,5× proj.</span>
+        <span class="kpi-sub">Lote 10×Top-10: Milvus 315,2 ms real (124,5 ms proj.) vs. 3.047,3 ms MySQL · Recall@10 = 0,97</span>
+      </article>
+      <article class="kpi">
+        <span class="kpi-label">Maior Vitória Relacional (C08)</span>
+        <span class="kpi-value mysql">102× real</span>
+        <span class="kpi-sub">JOIN + GROUP BY: MySQL 94,7 ms vs. Milvus 9.661,9 ms real (4.131,6 ms proj., k = 29)</span>
+      </article>
+      <article class="kpi">
+        <span class="kpi-label">Busca Semântica Pura (C10)</span>
+        <span class="kpi-value proj">19,5× proj.</span>
+        <span class="kpi-sub">Milvus 203,3 ms real (12,6 ms proj.) vs. MySQL 245,2 ms (BLOB força bruta) · Recall@10 = 0,90</span>
+      </article>
+    </section>
+
+    <section class="panel" aria-labelledby="chart-section-title">
+      <div class="panel-head">
+        <div>
+          <h2 id="chart-section-title">Duelo Visual por Consulta (C01–C12)</h2>
+          <p>A barra <strong>Milvus Real</strong> separa visualmente o processamento interno (verde) da parcela de rede (roxo hachurado).</p>
+        </div>
+      </div>
+
+      <div class="controls" role="toolbar" aria-label="Filtros e visualização do gráfico">
+        <div class="btn-group" id="cat-filters">
+          <span class="btn-group-label">Categoria</span>
+          <button type="button" class="chip" data-cat="all" aria-pressed="true">Todas (12)</button>
+          <button type="button" class="chip" data-cat="estruturada" aria-pressed="false">1 Tabela (5)</button>
+          <button type="button" class="chip" data-cat="cruzamento" aria-pressed="false">2 Tabelas (3)</button>
+          <button type="button" class="chip" data-cat="vetorial" aria-pressed="false">Vetoriais (4)</button>
+        </div>
+
+        <div class="btn-group" id="scale-filters">
+          <span class="btn-group-label">Escala</span>
+          <button type="button" class="chip" data-scale="relative" aria-pressed="true">Relativa por consulta</button>
+          <button type="button" class="chip" data-scale="log" aria-pressed="false">Logarítmica global</button>
+        </div>
+
+        <div class="btn-group" id="series-filters">
+          <span class="btn-group-label">Milvus</span>
+          <button type="button" class="chip" data-series="both" aria-pressed="true">Real + Proj.</button>
+          <button type="button" class="chip" data-series="real" aria-pressed="false">Só Real</button>
+          <button type="button" class="chip" data-series="proj" aria-pressed="false">Só Projetado</button>
+        </div>
+      </div>
+
+      <div class="chart-list" id="chart-list"></div>
+    </section>
+
+    <section class="panel" aria-labelledby="infra-title">
+      <div class="panel-head">
+        <div>
+          <h2 id="infra-title">Carga Inicial, Indexação e Consumo de Recursos</h2>
+          <p>Custo de preparação da base <code>final</code> (44.213 filmes + 197.433 registros de elenco).</p>
+        </div>
+      </div>
+      <div class="infra-grid">
+        <div class="infra-box">
+          <h3>Operações de Carga Inicial (Op0)</h3>
+          <div class="infra-row">
+            <span>Ping / Latência base</span>
+            <strong>MySQL 0,5 ms · Milvus 249,5 ms (mín. 190,7 ms)</strong>
+          </div>
+          <div class="infra-row">
+            <span>Op0a · Importação em lotes</span>
+            <strong>MySQL 22,5 s · Milvus 148,6 s real (101,8 s proj.)</strong>
+          </div>
+          <div class="infra-row">
+            <span>Op0b · Índices (+ load RAM)</span>
+            <strong>MySQL 5,6 s · Milvus 61,5 s real (57,7 s proj.)</strong>
+          </div>
+          <div class="infra-row">
+            <span>Total carga + indexação</span>
+            <strong>MySQL 28,0 s · Milvus 210,1 s real (159,6 s proj.)</strong>
+          </div>
+        </div>
+
+        <div class="infra-box">
+          <h3>Armazenamento e Memória</h3>
+          <div class="infra-row">
+            <span>MySQL · Tabelas relacionais (sem vetor)</span>
+            <strong>60,54 MB (dados + B-Tree/FULLTEXT)</strong>
+          </div>
+          <div class="infra-row">
+            <span>MySQL · <code>filmes_vetores</code> (44.213 BLOBs)</span>
+            <strong>81,36 MB (66,8% dos dados)</strong>
+          </div>
+          <div class="infra-row">
+            <span>MySQL · Total disco / RAM Docker</span>
+            <strong>141,90 MB disco · 438,9 MiB RAM</strong>
+          </div>
+          <div class="infra-row">
+            <span>Milvus · 241.646 vetores brutos em RAM</span>
+            <strong>371,17 MB (67,91 filmes + 303,26 elenco)</strong>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel" aria-labelledby="benchmark-table-caption">
+      <div class="panel-head">
+        <div>
+          <h2>Tabela Resumo Completa</h2>
+          <p>Todos os valores em milissegundos (média de 5 execuções). Clique em qualquer linha para abrir os detalhes.</p>
+        </div>
+      </div>
+
+      <div tabindex="0" role="region" aria-labelledby="benchmark-table-caption" class="table-wrapper">
+        <table>
+          <caption id="benchmark-table-caption">
+            Médias auditadas em <code>resultados/final/benchmark.json</code> — menor tempo em destaque por cenário.
+          </caption>
+          <thead>
+            <tr>
+              <th scope="col">Cód.</th>
+              <th scope="col">Operação</th>
+              <th scope="col" class="num">MySQL (ms)</th>
+              <th scope="col" class="num">Milvus Real (ms)</th>
+              <th scope="col" class="num">Milvus Proj. (ms)</th>
+              <th scope="col" class="num">Req. (k)</th>
+              <th scope="col">Vencedor (Real / Proj.)</th>
+            </tr>
+          </thead>
+          <tbody id="summary-tbody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <footer>
+      Gerado a partir dos dados auditados de <code>resultados/final/benchmark.json</code> · Hardware: AMD Ryzen 5 5600, 31,9 GB RAM, Windows 11 · Embedding: <code>paraphrase-multilingual-MiniLM-L12-v2</code> (384d).
+    </footer>
+  </main>
+
+  <dialog id="query-dialog" closedby="any" aria-labelledby="dialog-title">
+    <div class="dlg-head">
+      <div>
+        <div class="q-badges" id="dlg-badges" style="margin-block-end:0.35rem"></div>
+        <h1 id="dialog-title">Detalhes da consulta</h1>
+      </div>
+      <form method="dialog">
+        <button type="submit" value="close" class="btn-close" aria-label="Fechar janela">Fechar</button>
+      </form>
+    </div>
+    <div class="dlg-body" id="dlg-body"></div>
+    <div class="dlg-foot">
+      <form method="dialog">
+        <button type="submit" value="ok" class="btn-close" autofocus>Entendi</button>
+      </form>
+    </div>
+  </dialog>
+
+  <script>
+    const RTT_MIN = 190.7;
+
+    const QUERIES = [
+      {
+        code: "C01",
+        cat: "estruturada",
+        catLabel: "1 Tabela",
+        title: "Leitura por PK (lote de 100)",
+        mysql: { mean: 1.7, sd: 0.2, min: 1.4, max: 1.9, samples: [1.391, 1.763, 1.818, 1.736, 1.871] },
+        milvusReal: { mean: 204.2, sd: 6.0, min: 193.6, max: 208.9, samples: [193.646, 205.514, 208.909, 206.524, 206.242] },
+        k: 1,
+        milvusProj: { mean: 13.5, min: 2.9, max: 18.2 },
+        winReal: "MySQL",
+        winProj: "MySQL",
+        sql: "SELECT id, titulo, ano, nota, votos, diretor FROM filmes WHERE id IN (...100 ids) ORDER BY id",
+        milvusOp: "client.get(collection_name='tmdb_filmes_final', ids=[...100 ids], output_fields=[...])",
+        note: "Acesso pontual em B-Tree clusterizada do InnoDB em RAM local é 7,9× mais rápido mesmo descontando o RTT da nuvem."
+      },
+      {
+        code: "C02",
+        cat: "estruturada",
+        catLabel: "1 Tabela",
+        title: "Atualização em lote (UPDATE vs. upsert)",
+        mysql: { mean: 5.3, sd: 0.3, min: 4.9, max: 5.7, samples: [4.947, 5.064, 5.705, 5.384, 5.51] },
+        milvusReal: { mean: 765.0, sd: 123.8, min: 645.6, max: 898.8, samples: [898.8, 726.052, 645.577, 894.169, 660.305] },
+        k: 2,
+        milvusProj: { mean: 383.6, min: 264.2, max: 517.4 },
+        winReal: "MySQL",
+        winProj: "MySQL",
+        sql: "UPDATE filmes SET votos = votos + 1 WHERE id IN (...100 ids)",
+        milvusOp: "client.query(ids=[...], output_fields=['*']) -> altera em Python -> client.upsert(data)",
+        note: "Por usar segmentos imutáveis, o Milvus não suporta UPDATE parcial: precisa ler as 100 entidades completas (com vetores 384d) e regravá-las via DELETE lógico + INSERT."
+      },
+      {
+        code: "C03",
+        cat: "estruturada",
+        catLabel: "1 Tabela",
+        title: "Condicional simples + ordenação",
+        mysql: { mean: 0.9, sd: 0.03, min: 0.8, max: 0.9, samples: [0.907, 0.838, 0.86, 0.854, 0.916] },
+        milvusReal: { mean: 199.8, sd: 4.6, min: 191.8, max: 202.6, samples: [201.305, 191.754, 202.389, 201.03, 202.582] },
+        k: 1,
+        milvusProj: { mean: 9.1, min: 1.1, max: 11.9 },
+        winReal: "MySQL",
+        winProj: "MySQL",
+        sql: "SELECT id, titulo, nota, votos FROM filmes WHERE nota >= 8 AND votos >= 500 AND ano BETWEEN 1990 AND 2010 ORDER BY nota DESC, votos DESC, id LIMIT 100",
+        milvusOp: "client.query(filter='nota >= 8 and votos >= 500 and ano >= 1990 and ano <= 2010') + sort em Python",
+        note: "O índice composto B-Tree (nota, votos) no MySQL filtra e já entrega ordenado em menos de 1 ms com desvio mínimo (±0,03 ms)."
+      },
+      {
+        code: "C04",
+        cat: "estruturada",
+        catLabel: "1 Tabela",
+        title: "Busca por substring (LIKE '%Love%')",
+        mysql: { mean: 14.8, sd: 0.4, min: 14.2, max: 15.2, samples: [15.086, 14.879, 15.245, 14.583, 14.176] },
+        milvusReal: { mean: 219.9, sd: 12.0, min: 201.3, max: 229.1, samples: [201.275, 226.651, 228.002, 214.471, 229.146] },
+        k: 1,
+        milvusProj: { mean: 29.2, min: 10.6, max: 38.4 },
+        winReal: "MySQL",
+        winProj: "MySQL",
+        sql: "SELECT id, titulo FROM filmes WHERE titulo LIKE '%Love%'",
+        milvusOp: "client.query(filter='titulo like \"%Love%\"', output_fields=['id', 'titulo'])",
+        note: "Coringa inicial impede uso de prefixo B-Tree; ainda assim, a varredura local do MySQL vence com metade do tempo projetado do Milvus."
+      },
+      {
+        code: "C05",
+        cat: "estruturada",
+        catLabel: "1 Tabela",
+        title: "Agregação anual (COUNT/AVG/MAX/MIN)",
+        mysql: { mean: 44.8, sd: 1.5, min: 43.3, max: 46.8, samples: [45.863, 46.781, 44.468, 43.346, 43.541] },
+        milvusReal: { mean: 1505.2, sd: 78.6, min: 1392.7, max: 1585.9, samples: [1585.939, 1517.201, 1392.676, 1566.005, 1464.323] },
+        k: 4,
+        milvusProj: { mean: 742.4, min: 629.9, max: 823.1 },
+        winReal: "MySQL",
+        winProj: "MySQL",
+        sql: "SELECT ano, COUNT(*), AVG(nota), MAX(nota), MIN(nota) FROM filmes WHERE votos >= 10 AND ano BETWEEN 1980 AND 2017 GROUP BY ano ORDER BY ano",
+        milvusOp: "client.query_iterator(filter='votos >= 10 and ano >= 1980 and ano <= 2017') -> pandas groupby",
+        note: "Sem operadores analíticos nativos (GROUP BY/AVG), o Milvus precisa trafegar 18.466 entidades em 4 requisições paginadas e agregar em Python."
+      },
+      {
+        code: "C06",
+        cat: "cruzamento",
+        catLabel: "2 Tabelas",
+        title: "Busca de texto + JOIN (ator LIKE '%Hanks%')",
+        mysql: { mean: 39.7, sd: 0.6, min: 38.7, max: 40.4, samples: [39.751, 39.701, 39.664, 40.418, 38.747] },
+        milvusReal: { mean: 398.4, sd: 9.6, min: 383.3, max: 407.7, samples: [383.295, 399.725, 395.879, 405.301, 407.701] },
+        k: 2,
+        milvusProj: { mean: 17.0, min: 1.9, max: 26.3 },
+        winReal: "MySQL",
+        winProj: "Milvus",
+        sql: "SELECT f.id, f.titulo, f.ano, e.ator, e.personagem FROM elenco e JOIN filmes f ON f.id = e.filme_id WHERE e.ator LIKE '%Hanks%' ORDER BY f.ano",
+        milvusOp: "query(elenco, 'ator like \"%Hanks%\"') -> query(filmes, 'id in [...]') -> junção em Python",
+        note: "No tempo real o MySQL vence pelas 2 viagens de rede do Milvus; descontado o RTT, o índice em RAM do Milvus filtrou os 75 registros em 17,0 ms (2,3× mais rápido)."
+      },
+      {
+        code: "C07",
+        cat: "cruzamento",
+        catLabel: "2 Tabelas",
+        title: "JOIN vs. ARRAY desnormalizado (Tom Hanks)",
+        mysql: { mean: 0.8, sd: 0.1, min: 0.8, max: 0.9, samples: [0.836, 0.805, 0.773, 0.757, 0.921] },
+        milvusReal: { mean: 198.1, sd: 5.7, min: 191.1, max: 202.9, samples: [191.094, 192.751, 202.859, 202.504, 201.483] },
+        k: 1,
+        milvusProj: { mean: 7.4, min: 0.4, max: 12.2 },
+        winReal: "MySQL",
+        winProj: "MySQL",
+        flag: "Menor tempo global nos dois bancos",
+        sql: "SELECT f.id, f.titulo, f.ano FROM elenco e JOIN filmes f ON f.id = e.filme_id WHERE e.ator = 'Tom Hanks' ORDER BY f.id",
+        milvusOp: "client.query(collection_name='tmdb_filmes_final', filter='array_contains(elenco_principal, \"Tom Hanks\")')",
+        note: "Melhor tempo do benchmark em ambos os SGBDs: o MySQL resolve o JOIN via B-Tree em 0,8 ms, e o Milvus elimina a 2ª requisição graças ao ARRAY desnormalizado (7,4 ms proj.)."
+      },
+      {
+        code: "C08",
+        cat: "cruzamento",
+        catLabel: "2 Tabelas",
+        title: "Top-10 atores por nota média (JOIN + GROUP BY)",
+        mysql: { mean: 94.7, sd: 10.5, min: 83.9, max: 109.8, samples: [109.844, 90.756, 100.699, 88.174, 83.922] },
+        milvusReal: { mean: 9661.9, sd: 249.3, min: 9485.3, max: 10082.9, samples: [9693.152, 9548.853, 9485.339, 10082.851, 9499.182] },
+        k: 29,
+        milvusProj: { mean: 4131.6, min: 3955.0, max: 4552.6 },
+        winReal: "MySQL",
+        winProj: "MySQL",
+        flag: "Maior tempo do Milvus",
+        sql: "SELECT e.ator, COUNT(*), AVG(f.nota), MAX(f.nota) FROM elenco e JOIN filmes f ON f.id = e.filme_id WHERE f.votos >= 50 GROUP BY e.ator HAVING COUNT(*) >= 10 ORDER BY AVG(f.nota) DESC LIMIT 10",
+        milvusOp: "query_iterator(filmes) + query_iterator(elenco) [29 requisições] -> merge/groupby em Pandas",
+        note: "Pior caso do Milvus: baixar 197.433 entidades de elenco + 9.100 filmes em 29 páginas e cruzar em memória custa 43,6× mais no projetado e 102× mais no real."
+      },
+      {
+        code: "C09",
+        cat: "vetorial",
+        catLabel: "Vetorial",
+        title: "Busca semântica em lote (10 × Top-10)",
+        mysql: { mean: 3047.3, sd: 61.0, min: 2950.5, max: 3112.5, samples: [3072.363, 2950.453, 3068.26, 3032.925, 3112.492] },
+        milvusReal: { mean: 315.2, sd: 223.8, min: 213.3, max: 715.5, samples: [715.508, 213.856, 217.439, 213.335, 215.809] },
+        k: 1,
+        milvusProj: { mean: 124.5, min: 22.6, max: 524.8 },
+        recall: 0.97,
+        winReal: "Milvus",
+        winProj: "Milvus",
+        flag: "Maior tempo do MySQL",
+        sql: "10× (SELECT filme_id, vetor FROM filmes_vetores + produto interno exato em NumPy + SELECT titulo)",
+        milvusOp: "client.search(collection_name='tmdb_filmes_final', data=[10 vetores], anns_field='vetor', limit=10)",
+        note: "Vitória contundente do Milvus (9,7× real e 24,5× projetado): 4 de 5 execuções ficaram entre 213–217 ms (22,6 ms proj. no mínimo), contra 3,05 s de força bruta no MySQL."
+      },
+      {
+        code: "C10",
+        cat: "vetorial",
+        catLabel: "Vetorial",
+        title: "Busca semântica pura (k-NN vs. ANN)",
+        mysql: { mean: 245.2, sd: 16.5, min: 227.1, max: 272.0, samples: [242.856, 244.655, 239.372, 272.008, 227.125] },
+        milvusReal: { mean: 203.3, sd: 6.1, min: 194.7, max: 209.7, samples: [205.329, 199.352, 194.746, 207.253, 209.685] },
+        k: 1,
+        milvusProj: { mean: 12.6, min: 4.0, max: 19.0 },
+        recall: 0.90,
+        winReal: "Milvus",
+        winProj: "Milvus",
+        sql: "SELECT filme_id, vetor FROM filmes_vetores + cosseno exato em aplicação (varredura de 81,36 MB)",
+        milvusOp: "client.search(collection_name='tmdb_filmes_final', data=[vetor], anns_field='vetor', limit=10)",
+        note: "Mesmo atravessando a internet até o Zilliz Cloud, o índice ANN vence o MySQL local no tempo real (1,2×) e atinge 19,5× de vantagem no processamento interno (12,6 ms)."
+      },
+      {
+        code: "C11",
+        cat: "vetorial",
+        catLabel: "Vetorial",
+        title: "Busca híbrida (vetor + filtros escalares)",
+        mysql: { mean: 10.7, sd: 0.5, min: 10.0, max: 11.4, samples: [11.435, 10.765, 10.538, 10.619, 10.025] },
+        milvusReal: { mean: 203.6, sd: 5.7, min: 193.6, max: 207.0, samples: [206.762, 203.828, 206.84, 193.615, 207.009] },
+        k: 1,
+        milvusProj: { mean: 12.9, min: 2.9, max: 16.3 },
+        recall: 0.90,
+        winReal: "MySQL",
+        winProj: "Empate",
+        sql: "SELECT v.vetor FROM filmes_vetores v JOIN filmes f ... JOIN generos g ... WHERE nota >= 7 AND ano >= 2000 AND g.nome = 'Science Fiction' + cosseno",
+        milvusOp: "client.search(data=[vetor], filter='nota >= 7 and ano >= 2000 and array_contains(generos, \"Science Fiction\")', limit=10)",
+        note: "O filtro escalar muito seletivo reduziu os candidatos para apenas ~255 filmes, permitindo que o MySQL empatasse tecnicamente com o motor ANN projetado (10,7 ms vs. 12,9 ms)."
+      },
+      {
+        code: "C12",
+        cat: "vetorial",
+        catLabel: "Vetorial",
+        title: "FULLTEXT léxico (EN) vs. Semântica (PT)",
+        mysql: { mean: 3.5, sd: 0.2, min: 3.3, max: 3.8, samples: [3.812, 3.332, 3.274, 3.55, 3.316] },
+        milvusReal: { mean: 206.6, sd: 6.5, min: 197.8, max: 216.0, samples: [208.125, 205.885, 215.974, 197.801, 205.097] },
+        k: 1,
+        milvusProj: { mean: 15.9, min: 7.1, max: 25.3 },
+        winReal: "MySQL†",
+        winProj: "Milvus†",
+        sql: "SELECT id, titulo FROM filmes WHERE MATCH(sinopse) AGAINST ('masked hero fighting crime in a corrupt city') LIMIT 10",
+        milvusOp: "client.search(data=[embed('Um herói mascarado combatendo o crime em uma cidade corrompida')], limit=10)",
+        note: "MySQL vence em latência (3,5 ms), mas exige tradução para inglês e ranqueia por palavras soltas (Hello Brother). Milvus entende o conceito direto em português (Scarred City, The Mob)."
+      }
+    ];
+
+    const state = { cat: "all", scale: "relative", series: "both" };
+    const GLOBAL_MAX_LOG = Math.log10(11000);
+
+    const fmt = (n, dec = 1) => n.toLocaleString("pt-BR", { minimumFractionDigits: dec, maximumFractionDigits: dec });
+    const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+    function pct(val, rowMax) {
+      if (state.scale === "log") {
+        const clamped = Math.max(0.4, val);
+        return Math.min(100, Math.max(2, ((Math.log10(clamped) + 0.45) / (GLOBAL_MAX_LOG + 0.45)) * 100));
+      }
+      return Math.min(100, Math.max(1.5, (val / rowMax) * 100));
+    }
+
+    function ratioText(a, b) {
+      const faster = Math.min(a, b);
+      const slower = Math.max(a, b);
+      if (faster <= 0) return "";
+      const r = slower / faster;
+      return r >= 1.15 ? `${fmt(r, 1)}×` : "~1,0×";
+    }
+
+    function badgeClass(w) {
+      if (w.startsWith("Milvus")) return "milvus";
+      if (w.startsWith("MySQL")) return "mysql";
+      return "tie";
+    }
+
+    function render() {
+      const list = document.getElementById("chart-list");
+      const tbody = document.getElementById("summary-tbody");
+      const filtered = state.cat === "all" ? QUERIES : QUERIES.filter(q => q.cat === state.cat);
+
+      list.innerHTML = "";
+      tbody.innerHTML = "";
+
+      for (const q of filtered) {
+        const visibleVals = [q.mysql.mean];
+        if (state.series !== "proj") visibleVals.push(q.milvusReal.mean);
+        if (state.series !== "real") visibleVals.push(q.milvusProj.mean);
+        const rowMax = Math.max(...visibleVals);
+
+        const realTotalPct = pct(q.milvusReal.mean, rowMax);
+        const coreShare = Math.max(0, Math.min(1, q.milvusProj.mean / q.milvusReal.mean));
+        const realCorePct = realTotalPct * coreShare;
+        const realNetPct = realTotalPct - realCorePct;
+
+        const wrap = document.createElement("div");
+        wrap.className = "q-wrap";
+        wrap.innerHTML = `
+          <button type="button" class="q-card" data-code="${q.code}">
+            <div class="q-top">
+              <div class="q-title-wrap">
+                <span class="q-code">${q.code}</span>
+                <span class="q-title">${q.title}</span>
+                <span class="q-cat">${q.catLabel}</span>
+              </div>
+              <div class="q-badges">
+                ${q.recall ? `<span class="badge recall">Recall@10: ${fmt(q.recall, 2)}</span>` : ""}
+                <span class="badge ${badgeClass(q.winReal)}">Real: ${q.winReal} (${ratioText(q.mysql.mean, q.milvusReal.mean)})</span>
+                <span class="badge ${badgeClass(q.winProj)}">Proj.: ${q.winProj} (${ratioText(q.mysql.mean, q.milvusProj.mean)})</span>
+              </div>
+            </div>
+            <div class="bars">
+              <div class="bar-row">
+                <span class="bar-label"><span class="swatch mysql"></span>MySQL 8.4</span>
+                <div class="bar-track" aria-hidden="true">
+                  <div class="bar-fill mysql" style="inline-size:${pct(q.mysql.mean, rowMax).toFixed(2)}%"></div>
+                </div>
+                <span class="bar-val">${fmt(q.mysql.mean)} ms <span class="sub">±${fmt(q.mysql.sd, q.mysql.sd < 0.1 ? 2 : 1)}</span></span>
+              </div>
+
+              <div class="bar-row" ${state.series === "proj" ? "hidden" : ""}>
+                <span class="bar-label"><span class="swatch real"></span>Milvus Real (k=${q.k})</span>
+                <div class="bar-track" aria-hidden="true">
+                  <div class="bar-fill real-core" style="inline-size:${realCorePct.toFixed(2)}%"></div>
+                  <div class="bar-fill real-net" style="inline-size:${realNetPct.toFixed(2)}%"></div>
+                </div>
+                <span class="bar-val">${fmt(q.milvusReal.mean)} ms <span class="sub">±${fmt(q.milvusReal.sd)}</span></span>
+              </div>
+
+              <div class="bar-row" ${state.series === "real" ? "hidden" : ""}>
+                <span class="bar-label"><span class="swatch proj"></span>Milvus Proj.</span>
+                <div class="bar-track" aria-hidden="true">
+                  <div class="bar-fill proj" style="inline-size:${pct(q.milvusProj.mean, rowMax).toFixed(2)}%"></div>
+                </div>
+                <span class="bar-val">${fmt(q.milvusProj.mean)} ms <span class="sub">${fmt(q.milvusProj.min)}–${fmt(q.milvusProj.max)}</span></span>
+              </div>
+            </div>
+          </button>
+        `;
+        list.appendChild(wrap);
+
+        const tr = document.createElement("tr");
+        tr.dataset.code = q.code;
+        tr.tabIndex = 0;
+        const mysqlWinsReal = q.winReal.startsWith("MySQL");
+        const milvusWinsReal = q.winReal.startsWith("Milvus");
+        const milvusWinsProj = q.winProj.startsWith("Milvus");
+        tr.innerHTML = `
+          <th scope="row">${q.code}</th>
+          <td>${q.title}${q.recall ? ` <span style="color:var(--muted);font-size:0.76rem">(Recall ${fmt(q.recall, 2)})</span>` : ""}</td>
+          <td class="num ${mysqlWinsReal ? "win-num mysql" : ""}">${fmt(q.mysql.mean)}</td>
+          <td class="num ${milvusWinsReal ? "win-num milvus" : ""}">${fmt(q.milvusReal.mean)}</td>
+          <td class="num ${milvusWinsProj ? "win-num milvus" : ""}">${fmt(q.milvusProj.mean)}</td>
+          <td class="num">${q.k}</td>
+          <td>${q.winReal} / ${q.winProj}</td>
+        `;
+        tbody.appendChild(tr);
+      }
+    }
+
+    const dialog = document.getElementById("query-dialog");
+    const dlgTitle = document.getElementById("dialog-title");
+    const dlgBadges = document.getElementById("dlg-badges");
+    const dlgBody = document.getElementById("dlg-body");
+
+    function openDetail(code) {
+      const q = QUERIES.find(item => item.code === code);
+      if (!q) return;
+
+      dlgTitle.textContent = `${q.code} — ${q.title}`;
+      dlgBadges.innerHTML = `
+        <span class="q-cat">${q.catLabel}</span>
+        <span class="badge ${badgeClass(q.winReal)}">Real: ${q.winReal}</span>
+        <span class="badge ${badgeClass(q.winProj)}">Projetado: ${q.winProj}</span>
+        ${q.recall ? `<span class="badge recall">Recall@10: ${fmt(q.recall, 2)}</span>` : ""}
+      `;
+
+      const netCost = q.k * RTT_MIN;
+      dlgBody.innerHTML = `
+        <div class="dlg-metrics">
+          <div class="dlg-stat">
+            <span class="k">MySQL 8.4 (Local)</span>
+            <span class="v" style="color:var(--mysql)">${fmt(q.mysql.mean)} ms</span>
+            <span class="m">±${fmt(q.mysql.sd, q.mysql.sd < 0.1 ? 2 : 1)} · ${fmt(q.mysql.min)}–${fmt(q.mysql.max)} ms</span>
+          </div>
+          <div class="dlg-stat">
+            <span class="k">Milvus Real (k = ${q.k})</span>
+            <span class="v" style="color:var(--milvus-real)">${fmt(q.milvusReal.mean)} ms</span>
+            <span class="m">±${fmt(q.milvusReal.sd)} · rede ~${fmt(netCost)} ms</span>
+          </div>
+          <div class="dlg-stat">
+            <span class="k">Milvus Projetado</span>
+            <span class="v" style="color:var(--milvus-proj)">${fmt(q.milvusProj.mean)} ms</span>
+            <span class="m">Mín–Máx: ${fmt(q.milvusProj.min)}–${fmt(q.milvusProj.max)} ms</span>
+          </div>
+        </div>
+
+        <p class="dlg-note">${q.note}</p>
+
+        <div class="code-block">
+          <span>Consulta MySQL (SQL)</span>
+          <pre>${esc(q.sql)}</pre>
+        </div>
+
+        <div class="code-block">
+          <span>Operação Milvus (SDK pymilvus)</span>
+          <pre>${esc(q.milvusOp)}</pre>
+        </div>
+
+        <div class="code-block">
+          <span>5 amostras medidas (ms)</span>
+          <pre>MySQL : [${q.mysql.samples.map(v => fmt(v, 2)).join(" | ")}]
+Milvus: [${q.milvusReal.samples.map(v => fmt(v, 2)).join(" | ")}]</pre>
+        </div>
+      `;
+
+      dialog.showModal();
+    }
+
+    dialog.addEventListener("close", () => {
+      dialog.returnValue = "";
+    });
+
+    // Progressive enhancement fallback for browsers without native dialog closedby="any"
+    if (!("closedBy" in HTMLDialogElement.prototype)) {
+      const outside = (e, dlg) => {
+        const r = dlg.getBoundingClientRect();
+        return e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom;
+      };
+      let pressedOutside = false;
+      dialog.addEventListener("pointerdown", e => { pressedOutside = outside(e, dialog); });
+      dialog.addEventListener("pointerup", e => { if (pressedOutside && outside(e, dialog)) dialog.close(); });
+    }
+
+    document.getElementById("chart-list").addEventListener("click", e => {
+      const card = e.target.closest(".q-card");
+      if (card) openDetail(card.dataset.code);
+    });
+
+    document.getElementById("summary-tbody").addEventListener("click", e => {
+      const row = e.target.closest("tr[data-code]");
+      if (row) openDetail(row.dataset.code);
+    });
+
+    document.getElementById("summary-tbody").addEventListener("keydown", e => {
+      if (e.key === "Enter" || e.key === " ") {
+        const row = e.target.closest("tr[data-code]");
+        if (row) {
+          e.preventDefault();
+          openDetail(row.dataset.code);
+        }
+      }
+    });
+
+    function bindGroup(id, key, attr) {
+      const group = document.getElementById(id);
+      group.addEventListener("click", e => {
+        const btn = e.target.closest("button.chip");
+        if (!btn) return;
+        state[key] = btn.dataset[attr];
+        for (const b of group.querySelectorAll("button.chip")) {
+          b.setAttribute("aria-pressed", String(b === btn));
+        }
+        render();
+      });
+    }
+
+    bindGroup("cat-filters", "cat", "cat");
+    bindGroup("scale-filters", "scale", "scale");
+    bindGroup("series-filters", "series", "series");
+
+    render();
+  </script>
+</body>
+</html>

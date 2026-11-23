@@ -454,38 +454,39 @@
       }
     },
     "C09": {
-      "titulo": "Agregação por gênero (relação N:N x ARRAY)",
-      "categoria": "Duas tabelas",
-      "sql": "SELECT g.nome, COUNT(*), AVG(f.nota), MAX(f.nota), MIN(f.nota) FROM generos g JOIN filme_genero fg ON ... JOIN filmes f ON ... WHERE f.votos >= 10 GROUP BY g.nome",
-      "milvus_op": "query_iterator(filmes, campos=[generos, nota]) + explode/groupby na aplicação",
+      "titulo": "Busca semantica em lote (10 consultas x top-10)",
+      "categoria": "Vetorial",
+      "sql": "10x (SELECT filme_id, vetor FROM filmes_vetores + cosseno)",
+      "milvus_op": "client.search(data=[10 vetores], anns_field='vetor', limit=10)",
       "mysql": {
-        "media_ms": 81.02238000064972,
-        "desvio_ms": 4.250047241307558,
-        "min_ms": 77.25330000175745,
-        "max_ms": 88.32080000138376,
+        "media_ms": 3047.2987200000716,
+        "desvio_ms": 61.03969901603903,
+        "min_ms": 2950.4532999999356,
+        "max_ms": 3112.4917000001915,
         "n": 5,
         "amostras_ms": [
-          88.321,
-          80.167,
-          80.171,
-          77.253,
-          79.2
+          3072.363,
+          2950.453,
+          3068.26,
+          3032.925,
+          3112.492
         ]
       },
       "milvus": {
-        "media_ms": 1946.1323399998946,
-        "desvio_ms": 125.9069590439246,
-        "min_ms": 1820.6494000005478,
-        "max_ms": 2117.962799999077,
+        "media_ms": 315.18949999999677,
+        "desvio_ms": 223.79095333986294,
+        "min_ms": 213.33480000021154,
+        "max_ms": 715.5083000002378,
         "n": 5,
         "amostras_ms": [
-          2005.411,
-          1960.573,
-          1820.649,
-          2117.963,
-          1826.065
+          715.508,
+          213.856,
+          217.439,
+          213.335,
+          215.809
         ]
-      }
+      },
+      "recall": 0.97
     },
     "C10": {
       "titulo": "Busca semântica kNN top-10 (consulta em português)",

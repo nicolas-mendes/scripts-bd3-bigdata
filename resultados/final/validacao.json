@@ -1,79 +1,79 @@
 {
   "verificacoes": [
     {
-      "verificacao": "contagem filmes",
+      "verificacao": "COUNT filmes",
       "ok": true,
-      "detalhe": "preparado=44213 mysql=44213 milvus=44213"
+      "detalhe": "esperado=44213 mysql=44213 milvus=44213"
     },
     {
-      "verificacao": "contagem elenco",
+      "verificacao": "COUNT elenco",
       "ok": true,
-      "detalhe": "preparado=197433 mysql=197433 milvus=197433"
+      "detalhe": "esperado=197433 mysql=197433 milvus=197433"
     },
     {
-      "verificacao": "amostra de 20 filmes",
+      "verificacao": "AMOSTRA 20 filmes",
       "ok": true,
-      "detalhe": "20 x 20 registros"
+      "detalhe": "20==20"
     },
     {
-      "verificacao": "auto-recuperação top-1",
+      "verificacao": "TOP-1 auto-recuperacao",
       "ok": true,
       "detalhe": "10/10"
     },
     {
-      "verificacao": "C01 Leitura por chave primária (lote de 100)",
+      "verificacao": "C01",
       "ok": true,
-      "detalhe": "linhas mysql=100 milvus=100"
+      "detalhe": "mysql=100 milvus=100"
     },
     {
-      "verificacao": "C03 Condicional simples + ordenação",
+      "verificacao": "C03",
       "ok": true,
-      "detalhe": "linhas mysql=31 milvus=31"
+      "detalhe": "mysql=31 milvus=31"
     },
     {
-      "verificacao": "C04 Busca por parte do texto (título)",
+      "verificacao": "C04",
       "ok": true,
-      "detalhe": "linhas mysql=799 milvus=799"
+      "detalhe": "mysql=799 milvus=799"
     },
     {
-      "verificacao": "C05 Agregação por ano (COUNT/AVG/MAX/MIN)",
+      "verificacao": "C05",
       "ok": true,
-      "detalhe": "linhas mysql=38 milvus=38"
+      "detalhe": "mysql=38 milvus=38"
     },
     {
-      "verificacao": "C06 Busca por parte do nome do ator (JOIN)",
+      "verificacao": "C06",
       "ok": true,
-      "detalhe": "linhas mysql=75 milvus=75"
+      "detalhe": "mysql=75 milvus=75"
     },
     {
-      "verificacao": "C07 Filmes de um ator: JOIN x documento desnormalizado",
+      "verificacao": "C07",
       "ok": true,
-      "detalhe": "linhas mysql=58 milvus=58"
+      "detalhe": "mysql=58 milvus=58"
     },
     {
-      "verificacao": "C08 Top-10 atores por nota média (JOIN + GROUP BY + HAVING)",
+      "verificacao": "C08",
       "ok": true,
-      "detalhe": "linhas mysql=10 milvus=10"
+      "detalhe": "mysql=10 milvus=10"
     },
     {
-      "verificacao": "C09 Agregação por gênero (relação N:N x ARRAY)",
+      "verificacao": "C09 recall@10",
       "ok": true,
-      "detalhe": "linhas mysql=20 milvus=20"
+      "detalhe": "0.97"
     },
     {
-      "verificacao": "C10 recall@10 (ANN x exato)",
+      "verificacao": "C10 recall@10",
       "ok": true,
       "detalhe": "0.90"
     },
     {
-      "verificacao": "C11 recall@10 (ANN x exato)",
+      "verificacao": "C11 recall@10",
       "ok": true,
       "detalhe": "0.90"
     },
     {
-      "verificacao": "C02 atualização refletida e revertida nos dois SGBDs",
+      "verificacao": "C02 update/rollback",
       "ok": true,
-      "detalhe": "100 registros"
+      "detalhe": "registros=100"
     }
   ],
   "exemplos": {
@@ -566,80 +566,91 @@
     "C09": {
       "mysql": [
         [
-          "Action",
-          4331,
-          5.92,
-          8.3,
-          0.0
+          [
+            0,
+            70190
+          ],
+          "Scarred City",
+          0.681
         ],
         [
-          "Adventure",
-          2406,
-          6.055,
-          8.5,
-          0.0
+          [
+            0,
+            25728
+          ],
+          "The Mob",
+          0.6664
         ],
         [
-          "Animation",
-          1304,
-          6.589,
-          8.9,
-          2.3
+          [
+            0,
+            25672
+          ],
+          "Hollow Triumph",
+          0.6597
         ],
         [
-          "Comedy",
-          7477,
-          6.094,
-          9.1,
-          0.0
+          [
+            0,
+            13553
+          ],
+          "The Driller Killer",
+          0.6575
         ],
         [
-          "Crime",
-          2682,
-          6.313,
-          8.8,
-          0.0
+          [
+            0,
+            136911
+          ],
+          "The Factory",
+          0.6531
         ]
       ],
       "milvus": [
         [
-          "Action",
-          4331,
-          5.92,
-          8.3,
-          0.0
+          [
+            0,
+            70190
+          ],
+          "Scarred City",
+          0.6812
         ],
         [
-          "Adventure",
-          2406,
-          6.055,
-          8.5,
-          0.0
+          [
+            0,
+            25728
+          ],
+          "The Mob",
+          0.6654
         ],
         [
-          "Animation",
-          1304,
-          6.589,
-          8.9,
-          2.3
+          [
+            0,
+            25672
+          ],
+          "Hollow Triumph",
+          0.6573
         ],
         [
-          "Comedy",
-          7477,
-          6.094,
-          9.1,
-          0.0
+          [
+            0,
+            13553
+          ],
+          "The Driller Killer",
+          0.6559
         ],
         [
-          "Crime",
-          2682,
-          6.313,
-          8.8,
-          0.0
+          [
+            0,
+            136911
+          ],
+          "The Factory",
+          0.6552
         ]
       ],
-      "linhas_mysql": 20,
-      "linhas_milvus": 20
+      "linhas_mysql": 100,
+      "linhas_milvus": 100,
+      "recall@10": 0.97
     },
     "C10": {
       "mysql": [
